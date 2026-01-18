@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # --- FRONTEND (APP) ---
+  # ecommerce-web:
+  #   image: ecommerce-web-vue:v1
+  #   container_name: fe_nuxt
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - NODE_TLS_REJECT_UNAUTHORIZED=0
+  #     - API_BASE_URL=hhttps://gateway-service:443
+  #   volumes:
+  #     - D:\2026\Project\ecommerce-system\certs:/app/certs:ro
+  #   networks:
+  #     - ecommerce_net
+
+  # --- API GATEWAY ---
+  gateway-service:
+    image: gateway-service:v1
+    container_name: be_gateway
+    ports:
+      - "7123:443"
+    environment:
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/cert.pem
+      - ASPNETCORE_Kestrel__Certificates__Default__KeyPath=/https/key.pem
+      # Ánh xạ cấu hình JSON của bạn:
+      - InternalAuth__TokenEndpoint=https://gateway-service:443/connect/token
+      - InternalAuth__CustomerService__BaseUrl=https://customer-identity:443
+      # Gắn file appsettings từ máy thật vào container
+      - EcommerceVue__BaseUrl=https://ecommerce-web:3000
+      
+    volumes:
+      - D:\2026\Project\ecommerce-system\certs:/https:ro
+      - ./EcommerceApiGateway/EcommerceApiGateway/appsettings.json:/app/appsettings.json:ro
+    networks:
+      - ecommerce_net
+
+  # --- CUSTOMER SERVICE (IDENTITY) ---
+  customer-identity:
+    image: customeridentityserviceapi:latest
+    container_name: be_customer_service
+    ports:
+      - "7244:80"
+    environment:
+      - ASPNETCORE_URLS=http://+
+      # Ánh xạ JwtSettings:
+      - JwtSettings__Issuer=http://customer-identity
+      # Kết nối DB Oracle máy thật:
+      - ConnectionStrings__CustomerAppLocal=User Id=CUSTOMER;Password=customer_pwd;Data Source=host.docker.internal:1521/FREEPDB1;Persist Security Info=True
+      # Gắn file appsettings từ máy thật vào container
+      
+    volumes:
+      - ./CustomerIdentityService/CustomerIdentityService.API/appsettings.json:/app/appsettings.json:ro
+    networks:
+      - ecommerce_net
+
+networks:
+  ecommerce_net:
+    driver: bridge
