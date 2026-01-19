@@ -1,58 +1,42 @@
 version: '3.8'
 
 services:
-  # --- FRONTEND (APP) ---
-  # ecommerce-web:
-  #   image: ecommerce-web-vue:v1
-  #   container_name: fe_nuxt
-  #   ports:
-  #     - "3000:3000"
-  #   environment:
-  #     - NODE_TLS_REJECT_UNAUTHORIZED=0
-  #     - API_BASE_URL=hhttps://gateway-service:443
-  #   volumes:
-  #     - D:\2026\Project\ecommerce-system\certs:/app/certs:ro
-  #   networks:
-  #     - ecommerce_net
-
-  # --- API GATEWAY ---
+  # --- API GATEWAY (Giữ HTTPS làm lớp bảo vệ bên ngoài) ---
   gateway-service:
     image: gateway-service:v1
-    container_name: be_gateway
+    container_name: gateway_service
     ports:
-      - "7123:443"
+      - "7123:443" # Máy ngoài gọi 7123 (HTTPS)
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+;http://+
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/cert.pem
       - ASPNETCORE_Kestrel__Certificates__Default__KeyPath=/https/key.pem
-      # Ánh xạ cấu hình JSON của bạn:
-      - InternalAuth__TokenEndpoint=https://gateway-service:443/connect/token
-      - InternalAuth__CustomerService__BaseUrl=https://customer-identity:443
-      # Gắn file appsettings từ máy thật vào container
-      - EcommerceVue__BaseUrl=https://ecommerce-web:3000
-      
+      # GỌI SERVICE CON QUA HTTP (Nội bộ Docker)
+      - InternalAuth__CustomerService__BaseUrl=http://customer-identity:80
+      - InternalAuth__TokenEndpoint=http://customer-identity:80/connect/token
     volumes:
-      - D:\2026\Project\ecommerce-system\certs:/https:ro
-      - ./EcommerceApiGateway/EcommerceApiGateway/appsettings.json:/app/appsettings.json:ro
+      # Cập nhật đường dẫn cert mới
+      - D:\2026\Project\mini-project-ecommerce\certs:/https:ro
+      # Cập nhật đường dẫn appsettings mới
+      - D:\2026\Project\ecommerce-system\EcommerceApiGateway\EcommerceApiGateway\appsettings.json:/app/appsettings.json:ro
     networks:
       - ecommerce_net
 
-  # --- CUSTOMER SERVICE (IDENTITY) ---
+  # --- CUSTOMER SERVICE (Chạy thuần HTTP bên trong) ---
   customer-identity:
     image: customeridentityserviceapi:latest
-    container_name: be_customer_service
+    container_name: customer_service
     ports:
-      - "7244:80"
+      - "7244:80" # Mapping ra ngoài 7244 để bạn test trực tiếp nếu cần
     environment:
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+
-      # Ánh xạ JwtSettings:
       - JwtSettings__Issuer=http://customer-identity
-      # Kết nối DB Oracle máy thật:
       - ConnectionStrings__CustomerAppLocal=User Id=CUSTOMER;Password=customer_pwd;Data Source=host.docker.internal:1521/FREEPDB1;Persist Security Info=True
-      # Gắn file appsettings từ máy thật vào container
-      
     volumes:
-      - ./CustomerIdentityService/CustomerIdentityService.API/appsettings.json:/app/appsettings.json:ro
+      # Cập nhật đường dẫn appsettings mới
+      - D:\2026\Project\ecommerce-system\CustomerIdentityService\CustomerIdentityService.API\appsettings.json:/app/appsettings.json:ro
     networks:
       - ecommerce_net
 
