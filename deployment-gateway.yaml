@@ -16,12 +16,20 @@ spec:
       containers:
       - name: gateway-api
         image: gateway-service:v1
+        volumeMounts:
+            - name: cert-volume
+              mountPath: "/https"
+              readOnly: true
+            - name: config-volume
+              mountPath: /app/appsettings.Production.json
+              subPath: appsettings.Production.json
         imagePullPolicy: Never
         ports:
         - containerPort: 8080 # Phải đổi thành 8080 theo log bạn gửi
+        - containerPort: 443
         env:
         - name: ASPNETCORE_ENVIRONMENT
-          value: "Development"
+          value: "Production"
         # Ép .NET lắng nghe trên cả 8080 và 443
         - name: ASPNETCORE_URLS
           value: "https://+:443;http://+:8080" 
@@ -29,8 +37,6 @@ spec:
           value: "/https/tls.crt"
         - name: ASPNETCORE_Kestrel__Certificates__Default__KeyPath
           value: "/https/tls.key"
-        - name: ReverseProxy__Clusters__customer_cluster__Destinations__customer_api__Address
-          value: "http://customer-service:80/"
         # --- GOOGLE WEB API SETTINGS ---
         - name: GoogleWebApiSettings__client_id
           value: "100244040042-7n5uq1tu0o3fb15gub1r190ijb7anl31.apps.googleusercontent.com"
@@ -72,12 +78,11 @@ spec:
         - name: JwtSettings__Audience
           value: "https://gateway-service:443"
         - name: JwtSettings__ExpiryMinutes
-          value: "60"
-        volumeMounts:
-        - name: cert-volume
-          mountPath: "/https"
-          readOnly: true
+          value: "60"       
       volumes:
+      - name: config-volume
+        configMap:
+            name: yarp-config
       - name: cert-volume
         secret:
           secretName: gateway-cert-secret
@@ -100,3 +105,4 @@ spec:
       protocol: TCP
       port: 80
       targetPort: 8080 # Map cổng 80 của Service vào 8080 của Container
+      nodePort: 49730

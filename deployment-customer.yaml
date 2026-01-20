@@ -15,10 +15,13 @@ spec:
     spec:
       containers:
       - name: customer-api
-        image: customeridentityserviceapi:latest
+        image: customer-service:v1
         imagePullPolicy: Never
         ports:
         - containerPort: 8080 # Cổng thực tế .NET đang lắng nghe
+        volumeMounts:
+         - name: dataprotection-storage
+           mountPath: /home/app/.aspnet/DataProtection-Keys
         env:
         - name: ASPNETCORE_ENVIRONMENT
           value: "Development"
@@ -27,9 +30,12 @@ spec:
         - name: JwtSettings__Issuer
           value: "http://customer-service"
         - name: ConnectionStrings__CustomerAppLocal
-          value: "User Id=CUSTOMER;Password=customer_pwd;Data Source=host.docker.internal:1521/FREEPDB1;Persist Security Info=True"
+          value: "User Id=CUSTOMER;Password=customer_pwd;Data Source=172.16.0.202:1521/FREEPDB1;Persist Security Info=True"
         - name: EcommerceApiGateWay__BaseUrl
           value: "https://gateway-service:443"
+      volumes:
+         - name: dataprotection-storage
+           emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
