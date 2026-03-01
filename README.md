@@ -1,64 +1,114 @@
-# Ecommerce Microservices System
-
-Hệ thống thương mại điện tử kiến trúc Microservices hiện đại, xây dựng trên nền tảng **.NET Core**, sử dụng **YARP** làm API Gateway và cơ chế xác thực bảo mật đa lớp.
-
-
-
-## 📌 Kiến trúc hệ thống (Architecture)
-
-Dự án được thiết kế theo mô hình Microservices phân tách biệt lập giữa tầng giao diện (Frontend), tầng điều hướng (Gateway) và tầng nghiệp vụ (Backend Services).
-
-### Luồng xác thực & Bảo mật (Security Flow)
-Hệ thống sử dụng cơ chế chuyển đổi định danh (Token Exchange) để tối ưu bảo mật:
-* **Client ↔ Gateway**: Sử dụng **Auth Cookie** (HttpOnly, Secure) để bảo mật phía trình duyệt, chống các cuộc tấn công XSS và hỗ trợ tốt cho cơ chế SSR của Nuxt.js.
-* **Gateway ↔ Services**: API Gateway đóng vai trò là **Identity Server**, xác thực Cookie và chuyển đổi thành **Internal JWT (JWT 1)** để gửi đến các service backend.
-* **Service ↔ Service**: Khi các service giao tiếp nội bộ với nhau, hệ thống sử dụng mã xác thực riêng biệt **(JWT 2)** để đảm bảo tính toàn vẹn và phân quyền giữa các dịch vụ.
-
----
-
-## 🏗️ Cấu trúc các Repository
-
-### 1. Frontend Layer (Nuxt.js)
+# Ecommerce System
+Dự án hệ thống thương mại điện tử
+### Công nghệ
+- DotNet
+- Sql Server
+- Thư viện: 
+-- Entity framework
+## Cấu trúc dự án
+### 1. Website  (Mvc)
 | Project | Mô tả | Link Repository |
 | :--- | :--- | :--- |
-| **ecommerce-web-vue** | Giao diện dành cho khách hàng (Storefront) | [github.com/ecommerce-web-vue](https://github.com/ecommerce-web-vue) |
-| **ecommerce-cms-vue** | Hệ thống quản trị nội bộ (Admin Dashboard) | [github.com/ecommerce-cms-vue](https://github.com/ecommerce-cms-vue) |
+| **ecommerce-web** | Giao diện dành cho khách hàng | [github.com/ecommerce-web](https://github.com/nguyenthinh28902/ecommerce-web) |
+| **ecommerce-cms-web** | Hệ thống quản trị nội bộ (Admin Dashboard) | [github.com/ecommerce-cms-web](https://github.com/nguyenthinh28902/ecommerce-cms-web)|
 
 ### 2. API Gateway Layer (YARP)
 | Project | Mô tả | Link Repository |
 | :--- | :--- | :--- |
-| **EcommerceApiGateway** | Gateway điều hướng cho Web & Quản lý Auth Cookie | [github.com/EcommerceApiGateway](https://github.com/EcommerceApiGateway) |
-| **EcommerceApiGatewayCMS** | Gateway điều hướng cho CMS & Quản lý Auth Cookie | [github.com/EcommerceApiGatewayCMS](https://github.com/EcommerceApiGatewayCMS) |
+| **ApiGateway** | Gateway điều hướng cho Website khách hàng | [github.com/ecommerce-api-gateway](https://github.com/nguyenthinh28902/ecommerce-api-gateway) |
+| **ApiGateway CMS** | Gateway điều hướng cho CMS | [github.com/ecommerce-api-gateway-cms](https://github.com/nguyenthinh28902/ecommerce-api-gateway-cms) |
 
 ### 3. Backend Microservices (.NET Core)
 | Service | Database | Link Repository |
 | :--- | :--- | :--- |
-| **Customer Service** | **Oracle** | [github.com/customer-service](https://github.com/customer-service) |
-| **User Service** | SQL Server | [github.com/user-service](https://github.com/user-service) |
-| **Product Service** | SQL Server | [github.com/product-service](https://github.com/product-service) |
-| **Cart Service** | SQL Server | [github.com/cart-service](https://github.com/cart-service) |
-| **Payment Service** | SQL Server | [github.com/payment-service](https://github.com/payment-service) |
+| **Customer Service** | SQL Server | [github.com/ecommerce-customer-service](https://github.com/nguyenthinh28902/ecommerce-customer-service) |
+| **User Service** | SQL Server | [github.com/ecommerce-identity-cms](https://github.com/nguyenthinh28902/ecommerce-identity-cms) |
+| **Product Service** | SQL Server | [github.com/Ecom.ProductService](https://github.com/nguyenthinh28902/Ecom.ProductService) |
+
 
 ---
 
 ## 🛠️ Công nghệ sử dụng
-* **Backend:** .NET 8, YARP (Yet Another Reverse Proxy), Entity Framework Core.
-* **Frontend:** Nuxt 3 (Vue 3), Pinia, Tailwind CSS.
-* **Databases:** SQL Server, Oracle (dành riêng cho Customer Service).
+* **Backend:** .NET 10, YARP (Yet Another Reverse Proxy), Entity Framework Core.
+* **Databases:** SQL Server.
 * **Security:** Identity Server, JWT (JSON Web Token), Secure Cookies.
 
----
+## 🔄 Workflow Xác thực trực tiếp (Direct Identity)
 
-## ⚙️ Hướng dẫn cài đặt nhanh (Local)
+Mô hình **Decoupled Authentication** giúp giảm tải cho Gateway và tránh "điểm nghẽn" khi có số lượng lớn yêu cầu xác thực.
 
-### 1. Yêu cầu hệ thống
-* .NET SDK 8.0+
-* Node.js 18+ & PNPM/NPM
-* SQL Server & Oracle Database instance
+### 1. Giai đoạn Đăng nhập (Authentication)
+* **Step 1:** Người dùng nhập User/Pass trên Website(Google) hoặc CMS.
+* **Step 2:** Client gửi request trực tiếp tới URL của **Identity server**
+* **Step 3:** **Identity server** gọi **User Service** sử dụng **EF Core** truy vấn SQL Server để verify tài khoản.
+    * Nếu khớp, Service trả về thông tin để **Identity server** tạo **JWT** (chứa Claims như UserId, Role, Permissions).
+* **Step 4:** Token được trả trực tiếp về Client.
+* **Step 5:** Client call api khi đi qua gateway, gateway sẻ gọi để đổi token nội bộ để đi tiếp (Token Service-to-Service).
+### 🔑 Chi tiết Access Token (Ví dụ)
 
-### 2. Khởi chạy Backend
-1. Cấu hình ConnectionString trong file `appsettings.json` của từng service.
-2. Khởi động các Microservices:
-   ```bash
-   cd [Service-Directory]
-   dotnet run
+**Token nội bộ**
+
+Dưới đây là cấu trúc JWT được cấp cho `APIGatewayCMS` sau khi giải mã:
+
+```json
+{
+  "header": {
+    "alg": "RS256",
+    "kid": "2BF45F2C062C3F7CFD022EC23707CA44",
+    "typ": "at+jwt"
+  },
+  "payload": {
+    "iss": "https://localhost:7133",
+    "nbf": 1772364222,
+    "iat": 1772364222,
+    "exp": 1772364522,
+    "aud": [
+      "product.api",
+      "user.api"
+    ],
+    "scope": [
+      "order.internal",
+      "payment.internal",
+      "product.internal",
+      "stock.internal",
+      "user.internal"
+    ],
+    "client_id": "APIGatewayCMS",
+    "jti": "BFD5E2A71BAA5E154829B250C01D6202"
+  }
+}
+```
+
+**Token client**
+
+Dưới đây là cấu trúc JWT được cấp cho `cms_admin_client` sau khi giải mã:
+
+```json
+{
+  "header": {
+    "alg": "RS256",
+    "kid": "2BF45F2C062C3F7CFD022EC23707CA44",
+    "typ": "at+jwt"
+  },
+  "payload": {
+    "iss": "https://localhost:7133",
+    "exp": 1772367854,
+    "aud": [
+      "user.api",
+      "product.api"
+    ],
+    "scope": [
+      "openid",
+      "profile",
+      "email",
+      "user.read",
+      "user.write",
+      "product.read",
+      "order.write"
+    ],
+    "client_id": "cms_admin_client",
+    "sub": "4",
+    "jti": "61A2B07D501D7467092830BFFB4F661C"
+  }
+}
+```
