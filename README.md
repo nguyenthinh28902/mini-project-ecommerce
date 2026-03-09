@@ -5,16 +5,22 @@ Dự án hệ thống thương mại điện tử
 ### 1. Website  (Mvc)
 | Project | Mô tả | Link Repository |
 | :--- | :--- | :--- |
-| **ecommerce-web** | Giao diện dành cho khách hàng | [github.com/ecommerce-web](https://github.com/nguyenthinh28902/ecommerce-web) |
-| **ecommerce-cms-web** | Hệ thống quản trị nội bộ (Admin Dashboard) | [github.com/ecommerce-cms-web](https://github.com/nguyenthinh28902/ecommerce-cms-web)|
+| **ecommerce-web** | Giao diện dành cho khách hàng | [github.com/Ecom.Web](https://github.com/nguyenthinh28902/ecommerce-web) |
+| **ecommerce-cms-web** | Hệ thống quản trị nội bộ (Admin Dashboard) | [github.com/Ecom.Cms](https://github.com/nguyenthinh28902/ecommerce-cms-web)|
 
-### 2. API Gateway Layer (YARP)
+### 2. Identity server (Duende.IdentityServer)
+| Project | Mô tả | Link Repository |
+| :--- | :--- | :--- |
+| **Web IdentityServer** | Xác thực thông tin khách hàng | [github.com/Ecom.Web.Identityserver](https://github.com/nguyenthinh28902/ecommerce-web-identityserver) |
+| **CMS IdentityServer** | Xác thực thông tin quản trị | [github.com/Ecom.Cms.Identityserver](https://github.com/nguyenthinh28902/ecommerce-identity-server-cms) |
+
+### 3. API Gateway Layer (YARP)
 | Project | Mô tả | Link Repository |
 | :--- | :--- | :--- |
 | **ApiGateway** | Gateway điều hướng cho Website khách hàng | [github.com/ecommerce-api-gateway](https://github.com/nguyenthinh28902/ecommerce-api-gateway) |
 | **ApiGateway CMS** | Gateway điều hướng cho CMS | [github.com/ecommerce-api-gateway-cms](https://github.com/nguyenthinh28902/ecommerce-api-gateway-cms) |
 
-### 3. Backend Microservices (.NET Core)
+### 4. Backend Microservices (.NET Api Core)
 | Service | Mô tả | Link Repository |
 | :--- | :--- | :--- |
 | **Customer Service** | Thông tin khách hàng | [github.com/ecommerce-customer-service](https://github.com/nguyenthinh28902/ecommerce-customer-service) |
