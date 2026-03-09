@@ -1,10 +1,6 @@
 # Ecommerce System
 Dự án hệ thống thương mại điện tử
-### Công nghệ
-- DotNet
-- Sql Server
-- Thư viện: 
--- Entity framework
+#### Dự án còn đang phát triển chưa hoàn thành nhiều tính năng nghiệp vụ (tạo dữ liệu mẫu để test).
 ## Cấu trúc dự án
 ### 1. Website  (Mvc)
 | Project | Mô tả | Link Repository |
@@ -19,11 +15,14 @@ Dự án hệ thống thương mại điện tử
 | **ApiGateway CMS** | Gateway điều hướng cho CMS | [github.com/ecommerce-api-gateway-cms](https://github.com/nguyenthinh28902/ecommerce-api-gateway-cms) |
 
 ### 3. Backend Microservices (.NET Core)
-| Service | Database | Link Repository |
+| Service | Mô tả | Link Repository |
 | :--- | :--- | :--- |
-| **Customer Service** | SQL Server | [github.com/ecommerce-customer-service](https://github.com/nguyenthinh28902/ecommerce-customer-service) |
-| **User Service** | SQL Server | [github.com/ecommerce-identity-cms](https://github.com/nguyenthinh28902/ecommerce-identity-cms) |
-| **Product Service** | SQL Server | [github.com/Ecom.ProductService](https://github.com/nguyenthinh28902/Ecom.ProductService) |
+| **Customer Service** | Thông tin khách hàng | [github.com/ecommerce-customer-service](https://github.com/nguyenthinh28902/ecommerce-customer-service) |
+| **User Service** | Thông tin quản trị | [github.com/ecommerce-identity-cms](https://github.com/nguyenthinh28902/ecommerce-identity-cms) |
+| **Product Service** | Quản lý thông tin sản phẩm | [github.com/Ecom.ProductService](https://github.com/nguyenthinh28902/Ecom.ProductService) |
+| **Order Service** | Quản lý thông tin đặt hàng, thông tin giỏ hàng | [github.com/Ecom.OrderService](https://github.com/nguyenthinh28902/ecom-order-service) |
+| **Payment Service** | Quản lý thông tin giao dịch | [github.com/Ecom.PaymentService](https://github.com/nguyenthinh28902/ecom-payment) |
+| **Notification Service** | Quản lý thông báo | [github.com/Ecom.Notification](https://github.com/nguyenthinh28902/ecom-notification-service) |
 
 
 ---
