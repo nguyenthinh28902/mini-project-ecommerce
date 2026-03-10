@@ -32,7 +32,61 @@ Dự án hệ thống thương mại điện tử
 ### 5. Sơ đồ hệ thống
 ![Sơ đồ hệ thống](system-design-core-backend-services.png)
 ---
+### 6.Mô tả
+---
+#### 1. Tầng Giao diện & Người dùng (Client Layer)
+Hệ thống cung cấp hai giao diện người dùng tách biệt để đảm bảo tính bảo mật và trải nghiệm chuyên biệt:
+* **Web MVC (Khách hàng):** Cổng tương tác trực tiếp dành cho người dùng cuối (mua sắm, xem sản phẩm, thanh toán).
+* **CMS MVC (Quản trị):** Công cụ quản trị nội bộ dành cho nhân viên vận hành quản lý hệ thống.
 
+---
+
+#### 2. Tầng Bảo mật & Điều hướng (Entry Points)
+
+###### **Identity Server (Duende)**
+* Đóng vai trò là trung tâm xác thực (Identity Provider), nằm ngang hàng với Gateway.
+* Tiếp nhận và xử lý yêu cầu xác thực trực tiếp từ cả hai ứng dụng Web MVC.
+* **Cơ chế truy vấn:** Khi cần lấy dữ liệu để xác thực (từ User hoặc Customer Service), Identity Server sẽ gửi request thông qua **API Gateway** thay vì gọi trực tiếp vào database của service đó.
+
+###### **API Gateway (YARP)**
+Hệ thống sử dụng **YARP (Yet Another Reverse Proxy)** để điều hướng luồng yêu cầu với hai cổng riêng biệt:
+* **ApiGateway (Web):** Điều hướng tới các dịch vụ: `Customer`, `Product`, `Order`, `Payment`, `Notification`. *Lưu ý: Chặn hoàn toàn quyền truy cập tới User Service.*
+* **ApiGateway CMS:** Cho phép điều hướng tới toàn bộ 6 dịch vụ Backend.
+
+---
+
+#### 3. Tầng Dịch vụ lõi (Backend Microservices)
+Các dịch vụ được phát triển độc lập bằng **.NET Core API**, bao gồm:
+* **Customer Service:** Quản lý thông tin và hồ sơ khách hàng.
+* **User Service:** Quản lý thông tin tài khoản nhân sự quản trị hệ thống.
+* **Product Service:** Quản lý danh mục, thông tin và tồn kho sản phẩm.
+* **Order Service:** Xử lý quy trình đặt hàng và quản lý giỏ hàng.
+* **Payment Service:** Xử lý các giao dịch thanh toán.
+* **Notification Service:** Chịu trách nhiệm gửi thông báo (Email, SMS, Push Notification).
+
+---
+
+#### 4. Luồng giao tiếp (Communication Patterns)
+
+###### **Giao tiếp giữa các tầng (Inter-layer)**
+Sử dụng tiêu chuẩn **REST API (HTTP)** cho tất cả các yêu cầu từ Client tới Identity/Gateway và từ Gateway tới các Service.
+
+###### **Giao tiếp giữa các dịch vụ (Inter-service)**
+Để tối ưu hóa hiệu suất và đảm bảo tính nhất quán dữ liệu, hệ thống sử dụng kết hợp hai phương thức:
+* **Đồng bộ (Synchronous):** Sử dụng **gRPC** cho các tác vụ cần phản hồi tức thì (Ví dụ: `Order Service` gọi `Product Service` để kiểm tra giá và tồn kho).
+* **Bất đồng bộ (Asynchronous):** Sử dụng **RabbitMQ** làm Message Broker. Các dịch vụ nghiệp vụ đẩy sự kiện (Events) vào hàng đợi.
+* **Tiêu thụ dữ liệu:** `Notification Service` lắng nghe các sự kiện từ RabbitMQ để thực hiện nhiệm vụ, đảm bảo không làm nghẽn luồng xử lý chính (không sử dụng gRPC cho dịch vụ này).
+
+---
+
+#### 5. Tầng Dữ liệu (Persistence Layer)
+* **Chiến lược:** Áp dụng mô hình **Database per Service** để đảm bảo tính độc lập và khả năng mở rộng riêng lẻ.
+* **Công nghệ:** Sử dụng **SQL Server**.
+* **Quy mô:** Tổng cộng 8 Database riêng biệt (6 cho các Microservices và 2 cho các Identity Servers).
+
+---
+
+> **Ghi chú:** Đây là tài liệu thiết kế mức cao (High-level Design). Vui lòng tham khảo mã nguồn chi tiết trong từng Repository tương ứng để biết thêm về cấu hình triển khai.
 ## 🛠️ Công nghệ sử dụng
 * **Backend:** .NET 10, YARP (Yet Another Reverse Proxy), Duende.IdentityServer, Entity Framework Core.
 * **Databases:** SQL Server.
@@ -115,6 +169,4 @@ Dưới đây là cấu trúc JWT được cấp cho `cms_admin_client` sau khi 
   }
 }
 ```
-## Hệ thống
-### Xác thực
 
