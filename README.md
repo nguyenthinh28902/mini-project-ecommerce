@@ -1,6 +1,12 @@
 # Ecommerce System
 Dự án hệ thống thương mại điện tử
 #### Dự án còn đang phát triển chưa hoàn thành nhiều tính năng nghiệp vụ (tạo dữ liệu mẫu để test).
+## 🛠️ Công nghệ sử dụng
+* **Backend:** .NET 10, YARP (Yet Another Reverse Proxy), Duende.IdentityServer, Entity Framework Core.
+* **Databases:** SQL Server.
+* **Security:** Identity Server, JWT (JSON Web Token), Secure Cookies.
+*  **Packgage**: Redis, gRPC, RabbitMQ. 
+
 ## Cấu trúc dự án
 ### 1. Website  (Mvc)
 | Project | Mô tả | Link Repository |
@@ -87,13 +93,7 @@ Sử dụng tiêu chuẩn **REST API (HTTP)** cho tất cả các yêu cầu t�
 ---
 
 > **Ghi chú:** Đây là tài liệu thiết kế mức cao (High-level Design). Vui lòng tham khảo mã nguồn chi tiết trong từng Repository tương ứng để biết thêm về cấu hình triển khai.
-## 🛠️ Công nghệ sử dụng
-* **Backend:** .NET 10, YARP (Yet Another Reverse Proxy), Duende.IdentityServer, Entity Framework Core.
-* **Databases:** SQL Server.
-* **Security:** Identity Server, JWT (JSON Web Token), Secure Cookies.
-
 ## 🔄 Workflow hệ thống
-
 ### Workflow áp dụng cho toàn hệ thống (Authentication)
 * **Step 1:** Người dùng nhập User/Pass trên Website(Google) hoặc CMS.
 * **Step 2:** Client gửi request trực tiếp tới URL của **Identity server**
