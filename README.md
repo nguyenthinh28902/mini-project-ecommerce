@@ -92,13 +92,14 @@ Sử dụng tiêu chuẩn **REST API (HTTP)** cho tất cả các yêu cầu t�
 * **Databases:** SQL Server.
 * **Security:** Identity Server, JWT (JSON Web Token), Secure Cookies.
 
-## 🔄 Workflow Xác thực trực tiếp (Direct Identity)
+## 🔄 Workflow hệ thống
 
-### Giai đoạn Đăng nhập (Authentication)
+### Workflow áp dụng cho toàn hệ thống (Authentication)
 * **Step 1:** Người dùng nhập User/Pass trên Website(Google) hoặc CMS.
 * **Step 2:** Client gửi request trực tiếp tới URL của **Identity server**
 * **Step 3:** **Identity server** gọi **User Service** sử dụng **EF Core** truy vấn SQL Server để verify tài khoản.
     * Nếu khớp, Service trả về thông tin để **Identity server** tạo **JWT** (chứa Claims UserId).
+    * Khi truy vấn identity vẫn dùng token nội bộ.
 * **Step 4:** Token được trả trực tiếp về Client.
 * **Step 5:** Client call api khi đi qua gateway, gateway sẻ gọi để đổi token nội bộ để đi tiếp (Token Service-to-Service).
 ### 🔑 Chi tiết Access Token (Ví dụ)
@@ -169,4 +170,7 @@ Dưới đây là cấu trúc JWT được cấp cho `cms_admin_client` sau khi 
   }
 }
 ```
+
+### Workflow chi tiết
+
 
