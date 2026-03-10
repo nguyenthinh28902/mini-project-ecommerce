@@ -29,24 +29,22 @@ Dự án hệ thống thương mại điện tử
 | **Order Service** | Quản lý thông tin đặt hàng, thông tin giỏ hàng | [github.com/Ecom.OrderService](https://github.com/nguyenthinh28902/ecom-order-service) |
 | **Payment Service** | Quản lý thông tin giao dịch | [github.com/Ecom.PaymentService](https://github.com/nguyenthinh28902/ecom-payment) |
 | **Notification Service** | Quản lý thông báo | [github.com/Ecom.Notification](https://github.com/nguyenthinh28902/ecom-notification-service) |
-
-
+### 5. Sơ đồ hệ thống
+![Sơ đồ hệ thống](system-design-core-backend-services.png)
 ---
 
 ## 🛠️ Công nghệ sử dụng
-* **Backend:** .NET 10, YARP (Yet Another Reverse Proxy), Entity Framework Core.
+* **Backend:** .NET 10, YARP (Yet Another Reverse Proxy), Duende.IdentityServer, Entity Framework Core.
 * **Databases:** SQL Server.
 * **Security:** Identity Server, JWT (JSON Web Token), Secure Cookies.
 
 ## 🔄 Workflow Xác thực trực tiếp (Direct Identity)
 
-Mô hình **Decoupled Authentication** giúp giảm tải cho Gateway và tránh "điểm nghẽn" khi có số lượng lớn yêu cầu xác thực.
-
-### 1. Giai đoạn Đăng nhập (Authentication)
+### Giai đoạn Đăng nhập (Authentication)
 * **Step 1:** Người dùng nhập User/Pass trên Website(Google) hoặc CMS.
 * **Step 2:** Client gửi request trực tiếp tới URL của **Identity server**
 * **Step 3:** **Identity server** gọi **User Service** sử dụng **EF Core** truy vấn SQL Server để verify tài khoản.
-    * Nếu khớp, Service trả về thông tin để **Identity server** tạo **JWT** (chứa Claims như UserId, Role, Permissions).
+    * Nếu khớp, Service trả về thông tin để **Identity server** tạo **JWT** (chứa Claims UserId).
 * **Step 4:** Token được trả trực tiếp về Client.
 * **Step 5:** Client call api khi đi qua gateway, gateway sẻ gọi để đổi token nội bộ để đi tiếp (Token Service-to-Service).
 ### 🔑 Chi tiết Access Token (Ví dụ)
@@ -117,3 +115,6 @@ Dưới đây là cấu trúc JWT được cấp cho `cms_admin_client` sau khi 
   }
 }
 ```
+## Hệ thống
+### Xác thực
+
