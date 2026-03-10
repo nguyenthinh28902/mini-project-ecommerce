@@ -23,8 +23,8 @@ Dự án hệ thống thương mại điện tử
 ### 4. Backend Microservices (.NET Api Core)
 | Service | Mô tả | Link Repository |
 | :--- | :--- | :--- |
-| **Customer Service** | Thông tin khách hàng | [github.com/ecommerce-customer-service](https://github.com/nguyenthinh28902/ecommerce-customer-service) |
 | **User Service** | Thông tin quản trị | [github.com/ecommerce-identity-cms](https://github.com/nguyenthinh28902/ecommerce-identity-cms) |
+| **Customer Service** | Thông tin khách hàng | [github.com/ecommerce-customer-service](https://github.com/nguyenthinh28902/ecommerce-customer-service) |
 | **Product Service** | Quản lý thông tin sản phẩm | [github.com/Ecom.ProductService](https://github.com/nguyenthinh28902/Ecom.ProductService) |
 | **Order Service** | Quản lý thông tin đặt hàng, thông tin giỏ hàng | [github.com/Ecom.OrderService](https://github.com/nguyenthinh28902/ecom-order-service) |
 | **Payment Service** | Quản lý thông tin giao dịch | [github.com/Ecom.PaymentService](https://github.com/nguyenthinh28902/ecom-payment) |
