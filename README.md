@@ -46,8 +46,8 @@ Dự án hệ thống thương mại điện tử
 ### A. Presentation Layer (Tầng giao diện)
 | Project | Mô tả | Link Repository |
 | :--- | :--- | :--- |
-| **ecommerce-web** | Storefront phục vụ khách hàng mua sắm, tích hợp OIDC xác thực người dùng.| [github.com/Ecom.Web](https://github.com/nguyenthinh28902/ecommerce-web) |
-| **ecommerce-cms-web** | Dashboard quản trị nội bộ. | [github.com/Ecom.Cms](https://github.com/nguyenthinh28902/ecommerce-cms-web) |
+| **Ecommerce web** | Storefront phục vụ khách hàng mua sắm, tích hợp OIDC xác thực người dùng.| [github.com/Ecom.Web](https://github.com/nguyenthinh28902/ecommerce-web) |
+| **Ecommerce cms web** | Dashboard quản trị nội bộ. | [github.com/Ecom.Cms](https://github.com/nguyenthinh28902/ecommerce-cms-web) |
 
 ### B. Infrastructure & Security (Tầng hạ tầng & Bảo mật)
 #### Identity server (Duende.IdentityServer)
@@ -65,7 +65,7 @@ Dự án hệ thống thương mại điện tử
 ### C. Core Business Services (Các dịch vụ nghiệp vụ)
 | Service | Mô tả | Link Repository |
 | :--- | :--- | :--- |
-| **User Service** | Quản lý định danh, phân quyền (RBAC) cho nhân viên quản trị. | [github.com/ecommerce-identity-cms](https://github.com/nguyenthinh28902/ecommerce-identity-cms) |
+| **User Service** | Quản lý định danh, phân quyền cho nhân viên quản trị. (ASP.NET Core Identity)| [github.com/ecommerce-identity-cms](https://github.com/nguyenthinh28902/ecommerce-identity-cms) |
 | **Customer Service** | Lưu trữ hồ sơ khách hàng. | [github.com/ecommerce-customer-service](https://github.com/nguyenthinh28902/ecommerce-customer-service) |
 | **Product Service** | Quản lý danh mục sản phẩm. | [github.com/Ecom.ProductService](https://github.com/nguyenthinh28902/Ecom.ProductService) |
 | **Order Service** | Xử lý quy trình đặt hàng, quản lý giỏ hàng và trạng thái đơn hàng. | [github.com/Ecom.OrderService](https://github.com/nguyenthinh28902/ecom-order-service) |
