@@ -1,186 +1,155 @@
 # Ecommerce System
 Dự án hệ thống thương mại điện tử
 #### Dự án còn đang phát triển chưa hoàn thành nhiều tính năng nghiệp vụ (tạo dữ liệu mẫu để test).
-## 🛠️ Công nghệ sử dụng
-* **Backend:** .NET 10, YARP (Yet Another Reverse Proxy), Duende.IdentityServer, Entity Framework Core.
-* **Databases:** SQL Server.
-* **Security:** Identity Server, JWT (JSON Web Token), Secure Cookies.
-*  **Packgage**: Redis, gRPC, RabbitMQ. 
 
-## Cấu trúc dự án
-### 1. Website  (Mvc)
+---
+### 🔗 Technical Implementation (Chi tiết triển khai kỹ thuật)
+
+Để hiểu rõ cách hệ thống vận hành, bạn có thể tham khảo chi tiết cấu hình tại các tầng sau:
+
+* **Presentation Security (Client-Side):**
+    * Triển khai OIDC Middleware để quản lý phiên đăng nhập và bảo mật Cookie.
+    * Cấu hình chuyển hướng tự động tới Identity Server.
+    * [Xem cấu hình tại Web CMS](https://github.com/nguyenthinh28902/ecommerce-cms-web)
+
+* **Identity Provider Configuration:**
+    * Định nghĩa các `IdentityResources`, `ApiScopes` và `ApiResources`.
+    * Cấu hình Client Credentials cho Gateway và Authorization Code cho các ứng dụng MVC.
+    * Triển khai Custom Profile Service để mapping Claims từ API User/Customer.
+    * [Xem cấu hình tại Identity Server](https://github.com/nguyenthinh28902/ecommerce-identity-server-cms)
+
+* **Gateway Routing & Security (YARP):**
+    * Cấu hình Reverse Proxy chuyển tiếp yêu cầu dựa trên Route.
+    * Triển khai Policy xác thực tại Gateway để đảm bảo chỉ các request có Token hợp lệ mới được đi vào tầng Service.
+    * [Xem cấu hình tại Gateway](https://github.com/nguyenthinh28902/ecommerce-api-gateway-cms)
+
+* **Service-Level Security (Resource Server):**
+    * Cấu hình xác thực JWT Bearer tại từng Microservice.
+    * Phân quyền mức độ chi tiết dựa trên Scopes và Claims (Policy-based Authorization).
+    * [Xem cấu hình tại Product Service](https://github.com/nguyenthinh28902/Ecom.ProductService)
+---
+## 1. Sơ đồ hệ thống (System Architecture)
+![Sơ đồ hệ thống](system-design-core-backend-services.png)
+
+---
+
+## 🛠️ 2. Technology Stack (Công nghệ sử dụng)
+* **Backend Framework:** .NET 10, Entity Framework Core.
+* **Infrastructure:** YARP (Yet Another Reverse Proxy), Duende.IdentityServer.
+* **Databases:** SQL Server (Mô hình Database per Service).
+* **Communication:** gRPC (Đồng bộ), RabbitMQ (Bất đồng bộ).
+* **Security & Packages:** Identity Server, JWT, Secure Cookies, Redis.
+---
+
+## 📂 3. Project Structure (Cấu trúc dự án)
+
+### A. Presentation Layer (Tầng giao diện)
 | Project | Mô tả | Link Repository |
 | :--- | :--- | :--- |
-| **ecommerce-web** | Giao diện dành cho khách hàng | [github.com/Ecom.Web](https://github.com/nguyenthinh28902/ecommerce-web) |
-| **ecommerce-cms-web** | Hệ thống quản trị nội bộ (Admin Dashboard) | [github.com/Ecom.Cms](https://github.com/nguyenthinh28902/ecommerce-cms-web)|
+| **ecommerce-web** | Storefront phục vụ khách hàng mua sắm, tích hợp OIDC xác thực người dùng.| [github.com/Ecom.Web](https://github.com/nguyenthinh28902/ecommerce-web) |
+| **ecommerce-cms-web** | Dashboard quản trị nội bộ. | [github.com/Ecom.Cms](https://github.com/nguyenthinh28902/ecommerce-cms-web) |
 
-### 2. Identity server (Duende.IdentityServer)
+### B. Infrastructure & Security (Tầng hạ tầng & Bảo mật)
+#### Identity server (Duende.IdentityServer)
 | Project | Mô tả | Link Repository |
 | :--- | :--- | :--- |
-| **Web IdentityServer** | Xác thực thông tin khách hàng | [github.com/Ecom.Web.Identityserver](https://github.com/nguyenthinh28902/ecommerce-web-identityserver) |
-| **CMS IdentityServer** | Xác thực thông tin quản trị | [github.com/Ecom.Cms.Identityserver](https://github.com/nguyenthinh28902/ecommerce-identity-server-cms) |
+| **Web IdentityServer** | Identity Provider (IdP) xử lý đăng nhập, cấp phát token cho khách hàng. | [github.com/Ecom.Web.Identityserver](https://github.com/nguyenthinh28902/ecommerce-web-identityserver) |
+| **CMS IdentityServer** | Trung tâm định danh dành riêng cho quản trị viên và nhân viên vận hành. | [github.com/Ecom.Cms.Identityserver](https://github.com/nguyenthinh28902/ecommerce-identity-server-cms) |
 
-### 3. API Gateway Layer (YARP)
+#### API Gateway Layer (YARP)
 | Project | Mô tả | Link Repository |
 | :--- | :--- | :--- |
-| **ApiGateway** | Gateway điều hướng cho Website khách hàng | [github.com/ecommerce-api-gateway](https://github.com/nguyenthinh28902/ecommerce-api-gateway) |
-| **ApiGateway CMS** | Gateway điều hướng cho CMS | [github.com/ecommerce-api-gateway-cms](https://github.com/nguyenthinh28902/ecommerce-api-gateway-cms) |
+| **ApiGateway** | Gateway điều hướng (Reverse Proxy) và lọc quyền truy cập cho ứng dụng Web. | [github.com/ecommerce-api-gateway](https://github.com/nguyenthinh28902/ecommerce-api-gateway) |
+| **ApiGateway CMS** | Gateway điều hướng tập trung, tích hợp bảo mật nội bộ cho hệ thống CMS. | [github.com/ecommerce-api-gateway-cms](https://github.com/nguyenthinh28902/ecommerce-api-gateway-cms) |
 
-### 4. Backend Microservices (.NET Api Core)
+### C. Core Business Services (Các dịch vụ nghiệp vụ)
 | Service | Mô tả | Link Repository |
 | :--- | :--- | :--- |
-| **User Service** | Thông tin quản trị | [github.com/ecommerce-identity-cms](https://github.com/nguyenthinh28902/ecommerce-identity-cms) |
-| **Customer Service** | Thông tin khách hàng | [github.com/ecommerce-customer-service](https://github.com/nguyenthinh28902/ecommerce-customer-service) |
-| **Product Service** | Quản lý thông tin sản phẩm | [github.com/Ecom.ProductService](https://github.com/nguyenthinh28902/Ecom.ProductService) |
-| **Order Service** | Quản lý thông tin đặt hàng, thông tin giỏ hàng | [github.com/Ecom.OrderService](https://github.com/nguyenthinh28902/ecom-order-service) |
-| **Payment Service** | Quản lý thông tin giao dịch | [github.com/Ecom.PaymentService](https://github.com/nguyenthinh28902/ecom-payment) |
-| **Notification Service** | Quản lý thông báo | [github.com/Ecom.Notification](https://github.com/nguyenthinh28902/ecom-notification-service) |
-### 5. Sơ đồ hệ thống
-![Sơ đồ hệ thống](system-design-core-backend-services.png)
----
-### 6.Mô tả
----
-#### 1. Tầng Giao diện & Người dùng (Client Layer)
-Hệ thống cung cấp hai giao diện người dùng tách biệt để đảm bảo tính bảo mật và trải nghiệm chuyên biệt:
-* **Web MVC (Khách hàng):** Cổng tương tác trực tiếp dành cho người dùng cuối (mua sắm, xem sản phẩm, thanh toán).
-* **CMS MVC (Quản trị):** Công cụ quản trị nội bộ dành cho nhân viên vận hành quản lý hệ thống.
+| **User Service** | Quản lý định danh, phân quyền (RBAC) cho nhân viên quản trị. | [github.com/ecommerce-identity-cms](https://github.com/nguyenthinh28902/ecommerce-identity-cms) |
+| **Customer Service** | Lưu trữ hồ sơ khách hàng. | [github.com/ecommerce-customer-service](https://github.com/nguyenthinh28902/ecommerce-customer-service) |
+| **Product Service** | Quản lý danh mục sản phẩm. | [github.com/Ecom.ProductService](https://github.com/nguyenthinh28902/Ecom.ProductService) |
+| **Order Service** | Xử lý quy trình đặt hàng, quản lý giỏ hàng và trạng thái đơn hàng. | [github.com/Ecom.OrderService](https://github.com/nguyenthinh28902/ecom-order-service) |
+| **Payment Service** | Xử lý cổng thanh toán, lịch sử giao dịch và đối soát tài chính. | [github.com/Ecom.PaymentService](https://github.com/nguyenthinh28902/ecom-payment) |
+| **Notification Service** | Worker xử lý gửi thông báo (Email/Push) qua hàng đợi RabbitMQ. | [github.com/Ecom.Notification](https://github.com/nguyenthinh28902/ecom-notification-service) |
 
 ---
 
-#### 2. Tầng Bảo mật & Điều hướng (Entry Points)
+### 6. Architecture Description (Mô tả kiến trúc)
 
-###### **Identity Server (Duende)**
-* Đóng vai trò là trung tâm xác thực (Identity Provider), nằm ngang hàng với Gateway.
-* Tiếp nhận và xử lý yêu cầu xác thực trực tiếp từ cả hai ứng dụng Web MVC.
-* **Cơ chế truy vấn:** Khi cần lấy dữ liệu để xác thực (từ User hoặc Customer Service), Identity Server sẽ gửi request thông qua **API Gateway** thay vì gọi trực tiếp vào database của service đó.
+#### 1. Client Layer (Tầng giao diện & Người dùng)
+Hệ thống phân tách luồng người dùng ngay từ cấp độ giao diện để đảm bảo tính bảo mật và trải nghiệm chuyên biệt:
+* **Web MVC (Khách hàng):** Storefront phục vụ người dùng cuối tham quan, mua sắm và thanh toán trực tuyến.
+* **CMS MVC (Quản trị):** Dashboard nội bộ dành cho đội ngũ vận hành quản lý sản phẩm, đơn hàng và hệ thống.
 
-###### **API Gateway (YARP)**
-Hệ thống sử dụng **YARP (Yet Another Reverse Proxy)** để điều hướng luồng yêu cầu với hai cổng riêng biệt:
-* **ApiGateway (Web):** Điều hướng tới các dịch vụ: `Customer`, `Product`, `Order`, `Payment`, `Notification`. *Lưu ý: Chặn hoàn toàn quyền truy cập tới User Service.*
-* **ApiGateway CMS:** Cho phép điều hướng tới toàn bộ 6 dịch vụ Backend.
+#### 2. Entry Points & Security (Tầng bảo mật & Điều hướng)
+* **Identity Server (Duende):** Trung tâm định danh (Identity Provider) tập trung, xử lý xác thực theo tiêu chuẩn OIDC/OAuth2. 
+  * *Cơ chế xác thực:* Để đảm bảo tính đóng gói, Identity Server truy vấn thông tin định danh thông qua **API Gateway** thay vì kết nối trực tiếp vào Database của các Service.
+* **API Gateway (YARP):** Sử dụng giải pháp Reverse Proxy mạnh mẽ từ Microsoft để quản lý luồng yêu cầu:
+    * **Public Gateway (Web):** Điều hướng tới các dịch vụ nghiệp vụ công khai. Chặn hoàn toàn quyền truy cập tới dịch vụ quản trị (User Service).
+    * **Admin Gateway (CMS):** Cổng điều hướng toàn diện dành cho các tác vụ quản trị nội bộ.
 
----
+#### 3. Backend Microservices (Tầng dịch vụ lõi)
+Các dịch vụ được xây dựng độc lập trên nền tảng **.NET Core API**, mỗi dịch vụ chịu trách nhiệm cho một miền nghiệp vụ duy nhất (Domain Driven Design):
+* **User & Customer Service:** Quản lý tài khoản quản trị và hồ sơ khách hàng tách biệt.
+* **Product Service:** Xử lý danh mục sản phẩm và trạng thái tồn kho (Stock).
+* **Order & Payment Service:** Đảm nhận quy trình từ giỏ hàng, đặt hàng đến xử lý thanh toán và đối soát.
+* **Notification Service:** Hệ thống thông báo đa kênh, hoạt động như một Worker xử lý nền.
 
-#### 3. Tầng Dịch vụ lõi (Backend Microservices)
-Các dịch vụ được phát triển độc lập bằng **.NET Core API**, bao gồm:
-* **Customer Service:** Quản lý thông tin và hồ sơ khách hàng.
-* **User Service:** Quản lý thông tin tài khoản nhân sự quản trị hệ thống.
-* **Product Service:** Quản lý danh mục, thông tin và tồn kho sản phẩm.
-* **Order Service:** Xử lý quy trình đặt hàng và quản lý giỏ hàng.
-* **Payment Service:** Xử lý các giao dịch thanh toán.
-* **Notification Service:** Chịu trách nhiệm gửi thông báo (Email, SMS, Push Notification).
+#### 4. Communication Patterns (Mô hình giao tiếp)
+Kiến trúc kết hợp linh hoạt giữa hai mô hình giao tiếp để tối ưu hóa hiệu suất:
+* **Synchronous (Đồng bộ) qua gRPC:** Ưu tiên cho các tác vụ cần phản hồi tức thì với độ trễ cực thấp (ví dụ: Order Service kiểm tra giá và tồn kho thực tế từ Product Service).
+* **Asynchronous (Bất đồng bộ) qua RabbitMQ:** Sử dụng Message Broker để truyền tin dựa trên sự kiện (Event-driven). Giúp hệ thống giảm tải và đảm bảo tính sẵn sàng (ví dụ: Notification Service tiêu thụ các sự kiện đơn hàng để gửi mail mà không làm chậm quá trình thanh toán).
 
----
-
-#### 4. Luồng giao tiếp (Communication Patterns)
-
-###### **Giao tiếp giữa các tầng (Inter-layer)**
-Sử dụng tiêu chuẩn **REST API (HTTP)** cho tất cả các yêu cầu từ Client tới Identity/Gateway và từ Gateway tới các Service.
-
-###### **Giao tiếp giữa các dịch vụ (Inter-service)**
-Để tối ưu hóa hiệu suất và đảm bảo tính nhất quán dữ liệu, hệ thống sử dụng kết hợp hai phương thức:
-* **Đồng bộ (Synchronous):** Sử dụng **gRPC** cho các tác vụ cần phản hồi tức thì (Ví dụ: `Order Service` gọi `Product Service` để kiểm tra giá và tồn kho).
-* **Bất đồng bộ (Asynchronous):** Sử dụng **RabbitMQ** làm Message Broker. Các dịch vụ nghiệp vụ đẩy sự kiện (Events) vào hàng đợi.
-* **Tiêu thụ dữ liệu:** `Notification Service` lắng nghe các sự kiện từ RabbitMQ để thực hiện nhiệm vụ, đảm bảo không làm nghẽn luồng xử lý chính (không sử dụng gRPC cho dịch vụ này).
+#### 5. Persistence Layer (Tầng dữ liệu)
+* **Chiến lược:** Áp dụng nghiêm ngặt mô hình **Database per Service**. Mỗi Microservice sở hữu cơ sở dữ liệu riêng, đảm bảo tính độc lập và khả năng mở rộng quy mô linh hoạt.
+* **Quy mô:** 8 Database SQL Server tách biệt được quản lý thông qua Entity Framework Core.
 
 ---
 
-#### 5. Tầng Dữ liệu (Persistence Layer)
-* **Chiến lược:** Áp dụng mô hình **Database per Service** để đảm bảo tính độc lập và khả năng mở rộng riêng lẻ.
-* **Công nghệ:** Sử dụng **SQL Server**.
-* **Quy mô:** Tổng cộng 8 Database riêng biệt (6 cho các Microservices và 2 cho các Identity Servers).
+## 🔄 4. System Workflows (Luồng hoạt động hệ thống)
 
----
+### Centralized Authentication Flow (Luồng xác thực tập trung)
+Hệ thống áp dụng cơ chế xác thực tập trung sử dụng giao thức **OpenID Connect (OIDC)** để đảm bảo tính an toàn và đồng nhất giữa các Client:
+* **Bước 1 - User Authentication:** Người dùng nhập thông tin đăng nhập qua Website (tích hợp Google định danh) hoặc hệ thống CMS quản trị.
+* **Bước 2 - Identity Redirection:** Client chuyển tiếp yêu cầu xác thực trực tiếp đến **Identity Server** (IdP). Việc này đảm bảo thông tin nhạy cảm không đi qua các tầng trung gian.
+* **Bước 3 - Identity Verification:** **Identity Server gọi API thông qua Gateway** để kết nối tới **User/Customer Service** nhằm kiểm tra thông tin tài khoản.
+    * Sau khi xác thực thành công, Identity Server tổng hợp thông tin định danh (User Claims) để khởi tạo **Access Token (JWT)**.
+    * *Lưu ý:* Mọi truy vấn giữa các thành phần hạ tầng trong bước này đều được bảo mật bằng Token nội bộ.
+* **Bước 4 - Token Issuance:** JWT được ký số và trả về cho Client để lưu trữ an toàn tại Secure Storage (Cookie/LocalStorage).
+* **Bước 5 - API Gateway & Token Exchange:** Khi Client gửi request qua **API Gateway**, Gateway thực hiện cơ chế **Token Exchange (Service-to-Service)**: Hoán đổi/cấp mới Token nội bộ để các dịch vụ Backend có thể tin tưởng và xử lý yêu cầu.
 
-> **Ghi chú:** Đây là tài liệu thiết kế mức cao (High-level Design). Vui lòng tham khảo mã nguồn chi tiết trong từng Repository tương ứng để biết thêm về cấu hình triển khai.
-## 🔄 Workflow hệ thống
-### Workflow áp dụng cho toàn hệ thống (Authentication)
-* **Step 1:** Người dùng nhập User/Pass trên Website(Google) hoặc CMS.
-* **Step 2:** Client gửi request trực tiếp tới URL của **Identity server**
-* **Step 3:** **Identity server** gọi **User Service** sử dụng **EF Core** truy vấn SQL Server để verify tài khoản.
-    * Nếu khớp, Service trả về thông tin để **Identity server** tạo **JWT** (chứa Claims UserId).
-    * Khi truy vấn identity vẫn dùng token nội bộ.
-* **Step 4:** Token được trả trực tiếp về Client.
-* **Step 5:** Client call api khi đi qua gateway, gateway sẻ gọi để đổi token nội bộ để đi tiếp (Token Service-to-Service).
-### 🔑 Chi tiết Access Token (Ví dụ)
+### Internal Communication Pattern (Giao tiếp nội bộ)
+* **Synchronous (Đồng bộ):** Triển khai **gRPC** cho các tác vụ đòi hỏi hiệu năng cao và phản hồi tức thời giữa các Service nội bộ (Ví dụ: Order Service truy vấn dữ liệu tồn kho từ Product Service).
+* **Asynchronous (Bất đồng bộ):** Sử dụng **RabbitMQ** để xử lý các sự kiện (Event-driven). Điển hình là `Notification Service` sẽ lắng nghe và tiêu thụ các sự kiện đơn hàng để thực hiện tác vụ gửi thông báo mà không gây nghẽn luồng xử lý chính.
+## 🔑 5. Access Token Examples (Ví dụ Token)
 
-**Token nội bộ**
-
+**Token nội bộ (Internal Token)**
 Dưới đây là cấu trúc JWT được cấp cho `APIGatewayCMS` sau khi giải mã:
-
 ```json
 {
-  "header": {
-    "alg": "RS256",
-    "kid": "2BF45F2C062C3F7CFD022EC23707CA44",
-    "typ": "at+jwt"
-  },
+  "header": { "alg": "RS256", "kid": "2BF45F2C062C3F7CFD022EC23707CA44", "typ": "at+jwt" },
   "payload": {
     "iss": "https://localhost:7133",
-    "nbf": 1772364222,
-    "iat": 1772364222,
-    "exp": 1772364522,
-    "aud": [
-      "product.api",
-      "user.api"
-    ],
-    "scope": [
-      "order.internal",
-      "payment.internal",
-      "product.internal",
-      "stock.internal",
-      "user.internal"
-    ],
-    "client_id": "APIGatewayCMS",
-    "jti": "BFD5E2A71BAA5E154829B250C01D6202"
+    "aud": ["product.api", "user.api"],
+    "scope": ["order.internal", "payment.internal", "product.internal", "stock.internal", "user.internal"],
+    "client_id": "APIGatewayCMS"
   }
 }
 ```
 
 **Token client**
-
 Dưới đây là cấu trúc JWT được cấp cho `cms_admin_client` sau khi giải mã:
-
 ```json
 {
-  "header": {
-    "alg": "RS256",
-    "kid": "2BF45F2C062C3F7CFD022EC23707CA44",
-    "typ": "at+jwt"
-  },
+  "header": { "alg": "RS256", "kid": "2BF45F2C062C3F7CFD022EC23707CA44", "typ": "at+jwt" },
   "payload": {
     "iss": "https://localhost:7133",
-    "exp": 1772367854,
-    "aud": [
-      "user.api",
-      "product.api"
-    ],
-    "scope": [
-      "openid",
-      "profile",
-      "email",
-      "user.read",
-      "user.write",
-      "product.read",
-      "order.write"
-    ],
+    "aud": ["user.api", "product.api"],
+    "scope": ["openid", "profile", "email", "user.read", "user.write", "product.read", "order.write"],
     "client_id": "cms_admin_client",
-    "sub": "4",
-    "jti": "61A2B07D501D7467092830BFFB4F661C"
+    "sub": "4"
   }
 }
 ```
 
-## Workflow chi tiết
-### Cấu hình xác thực tại Web
-[Xem tiếp](https://github.com/nguyenthinh28902/ecommerce-cms-web).
-
-### Xác thực tại identity
-[Xem tiếp](https://github.com/nguyenthinh28902/ecommerce-identity-server-cms).
-
-### Xác thực tại Getaway 
-[Xem tiếp](https://github.com/nguyenthinh28902/ecommerce-api-gateway-cms).
-
-### Xác thực tại Service (Product servcie)
-[Xem tiếp](https://github.com/nguyenthinh28902/Ecom.ProductService).
-
+---
