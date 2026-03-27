@@ -74,7 +74,7 @@ Dự án hệ thống thương mại điện tử
 
 ---
 
-### 6. Architecture Description (Mô tả kiến trúc)
+### D. Architecture Description (Mô tả kiến trúc)
 
 #### 1. Client Layer (Tầng giao diện & Người dùng)
 Hệ thống phân tách luồng người dùng ngay từ cấp độ giao diện để đảm bảo tính bảo mật và trải nghiệm chuyên biệt:
