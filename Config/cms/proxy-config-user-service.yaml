@@ -1,0 +1,22 @@
+ReverseProxy:
+  Routes:
+    user_service_api_auth_route:
+      ClusterId: "user_service_cluster"
+      AuthorizationPolicy: "InternalPolicy"
+      Match:
+        Path: "/api/xac-thuc/{**catch-all}"
+      Metadata:
+        serviceName: "UserCMSService"
+
+    user_service_api_read_route:
+      ClusterId: "user_service_cluster"
+      AuthorizationPolicy: "UserReadPolicy"
+      Match:
+        Path: "/api/tai-khoan/{**catch-all}"
+      Metadata:
+        serviceName: "UserCMSService"
+  Clusters:
+    user_service_cluster:
+      Destinations:
+        user_service_node:
+          Address: "https://ecom-identity-cms:443"

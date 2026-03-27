@@ -1,0 +1,28 @@
+ReverseProxy:
+  Routes:
+    # Route cho Giỏ hàng
+    order_service_api_route:
+      ClusterId: "order_service_cluster"
+      RateLimiterPolicy: "ratelimit-cart-policy"
+      AuthorizationPolicy: OrderService
+      Match:
+        Path: "/api/gio-hang/{**catch-all}"
+      Metadata:
+        serviceName: "OrderService"
+
+    #  Route mới cho các API liên quan đến Đơn hàng (Checkout, PlaceOrder...)
+    order_management_api_route:
+      ClusterId: "order_service_cluster"
+      RateLimiterPolicy: "ratelimit-order-policy"
+      AuthorizationPolicy: OrderService
+      Match:
+        Path: "/api/don-hang/{**catch-all}"
+      Metadata:
+        serviceName: "OrderService"
+
+  Clusters:
+    order_service_cluster:
+      Destinations:
+        order_service_node:
+          #  Địa chỉ thực tế của Order Service API
+          Address: "https://ecom-order-service:443"

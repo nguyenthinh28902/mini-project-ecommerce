@@ -1,0 +1,37 @@
+services:
+  identity-server:
+    build:
+      # Trỏ về thư mục chứa code (D:\2026\Project\ecommerce-system)
+      context: D:/2026/Project/ecommerce-system
+      # Trỏ về thư mục chứa Dockerfile
+      dockerfile: D:/2026/Project/mini-project-ecommerce/dockerfiles/Identityserver.Dockerfile
+    container_name: ecom-identity
+    ports:
+      - "5001:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__EcomCMS_IdentityServer_DB=Data Source=host.docker.internal;Initial Catalog=EcomWeb_IdentityServer_DB;User ID=demo;Password=Thinh@zzxx9;TrustServerCertificate=True
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  product-service:
+    build:
+      context: D:/2026/Project/ecommerce-system
+      dockerfile: D:/2026/Project/mini-project-ecommerce/dockerfiles/product.Dockerfile
+    container_name: ecom-product-service
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__EcommerceProduct=Data Source=host.docker.internal,1433;Persist Security Info=True;User ID=demo;Password=Thinh@zzxx9;Trust Server Certificate=True;Initial Catalog=ecom_product_db;
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  api-gateway:
+    build:
+      context: D:/2026/Project/ecommerce-system
+      dockerfile: D:/2026/Project/mini-project-ecommerce/dockerfiles/webapigateway.Dockerfile
+    container_name: ecom-gateway
+    ports:
+      - "5000:8080"
+    depends_on:
+      - identity-server
+      - product-service

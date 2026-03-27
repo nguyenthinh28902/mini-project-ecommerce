@@ -1,0 +1,18 @@
+services:
+  ecom-web:
+    build:
+      context: D:/2026/Project/ecommerce-system
+      dockerfile: D:/2026/Project/mini-project-ecommerce/dockerfiles/EcomWeb.Dockerfile
+    container_name: ecom_web_mvc
+    ports:
+      - "8080:80"
+      - "8081:443"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+;http://+
+      # Cấu hình Kestrel đọc file từ volume bên dưới
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=mk123
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/EcomWeb.pfx
+    volumes:
+      # Mount file từ Windows vào Linux container
+      - ${USERPROFILE}\.aspnet\https:/https:ro

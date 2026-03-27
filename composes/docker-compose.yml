@@ -1,0 +1,277 @@
+services:
+  # ==========================================
+  # NHÓM 1: E-COMMERCE CORE SERVICES
+  # ==========================================
+  identity-server:
+    build:
+      context: D:/2026/Project/ecommerce-system
+      dockerfile: D:/2026/Project/mini-project-ecommerce/dockerfiles/Identityserver.Dockerfile
+    container_name: ecom-identity
+    environment:
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=mk123
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/ecom-identity.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__AllowInvalid=true
+      - ConnectionStrings__EcomCMS_IdentityServer_DB=Data Source=host.docker.internal,1433;Initial Catalog=EcomWeb_IdentityServer_DB;User ID=demo;Password=Thinh@zzxx9;Encrypt=True;TrustServerCertificate=True
+      - ConfigServiceUrl__EcomWebUrl=https://ecom-web-ui:44381
+      - ConfigServiceUrl__EcomGatewayUrl=https://ecom-gateway
+      - InternalAuthOptions__TokenEndpoint=https://ecom-identity/connect/token
+      - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
+    volumes:
+      - ${USERPROFILE}\.aspnet\https:/https:ro
+    ports:
+      - "5001:80"
+      - "50011:443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  api-gateway:
+    build:
+      context: D:/2026/Project/ecommerce-system
+      dockerfile: D:/2026/Project/mini-project-ecommerce/dockerfiles/GatewayWeb.Dockerfile
+    container_name: ecom-gateway
+    environment:
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=mk123
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/ecom-gateway.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__AllowInvalid=true
+      - InternalAuth__Issuer=https://ecom-identity
+      - RedisConfig__RedisConnectionString=host.docker.internal:6379
+      - InternalAuth__ClientId=APIGatewayWeb.internal
+      - InternalAuth__ClientSecret=gateway-web-secret
+      - InternalAuth__Scopes=customer.internal product.read.web order.internal.web
+    volumes:
+      - ${USERPROFILE}\.aspnet\https:/https:ro
+      - D:/2026/Project/mini-project-ecommerce/Config/web/proxy-config-customer.yaml:/app/proxy-config-customer.yaml
+      - D:/2026/Project/mini-project-ecommerce/Config/web/proxy-config-order-service.yaml:/app/proxy-config-order-service.yaml
+      - D:/2026/Project/mini-project-ecommerce/Config/web/proxy-config-payment-service.yaml:/app/proxy-config-payment-service.yaml
+      - D:/2026/Project/mini-project-ecommerce/Config/web/proxy-config-product-service.yaml:/app/proxy-config-product-service.yaml
+    ports:
+      - "5000:80"
+      - "50001:443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  customer-identity:
+    build:
+      context: D:/2026/Project/ecommerce-system
+      dockerfile: D:/2026/Project/mini-project-ecommerce/dockerfiles/CustomerIdentity.Dockerfile
+    container_name: ecom-customer-identity
+    environment:
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=mk123
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/ecom-customer-identity.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__AllowInvalid=true
+      - ConnectionStrings__CustomerAppLocal=Data Source=host.docker.internal,1433;Initial Catalog=Ecom_Customers_DB;User ID=demo;Password=Thinh@zzxx9;Encrypt=True;TrustServerCertificate=True
+      - JwtSettings__Issuer=https://ecom-identity
+      - EcommerceApiGateWay__BaseUrl=https://ecom-gateway
+    volumes:
+      - ${USERPROFILE}\.aspnet\https:/https:ro
+    ports:
+      - "8001:80"
+      - "44301:443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  product-service:
+    build:
+      context: D:/2026/Project/ecommerce-system
+      dockerfile: D:/2026/Project/mini-project-ecommerce/dockerfiles/ProductService.Dockerfile
+    container_name: ecom-product-service
+    environment:
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=mk123
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/ecom-product-service.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__AllowInvalid=true
+      - ConnectionStrings__EcommerceProduct=Data Source=host.docker.internal,1433;Initial Catalog=ecom_product_db;User ID=demo;Password=Thinh@zzxx9;Encrypt=True;TrustServerCertificate=True
+      - InternalAuth__Issuer=https://ecom-identity-server-cms
+      - InternalAuthWeb__Issuer=https://ecom-identity
+      - RedisConnection__RedisConnectionString=host.docker.internal:6379
+    volumes:
+      - ${USERPROFILE}\.aspnet\https:/https:ro
+    ports:
+      - "5005:80"
+      - "50055:443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  order-service:
+    build:
+      context: D:/2026/Project/ecommerce-system
+      dockerfile: D:/2026/Project/mini-project-ecommerce/dockerfiles/OrderService.Dockerfile
+    container_name: ecom-order-service
+    environment:
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=mk123
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/ecom-order-service.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__AllowInvalid=true
+      - ConnectionStrings__EcomOrderDb=Data Source=host.docker.internal,1433;Initial Catalog=Ecom_OrderDb;User ID=demo;Password=Thinh@zzxx9;Encrypt=True;TrustServerCertificate=True
+      - InternalAuth__Issuer=https://ecom-identity-server-cms
+      - InternalAuthWeb__Issuer=https://ecom-identity
+      - ServiceUrl__ProductServiceUrl=https://ecom-product-service
+      - ServiceUrl__PaymentServiceUrl=https://ecom-payment-service
+      - RabbitMQSettings__Host=host.docker.internal
+    volumes:
+      - ${USERPROFILE}\.aspnet\https:/https:ro
+    ports:
+      - "5006:80"
+      - "50066:443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  payment-service:
+    build:
+      context: D:/2026/Project/ecommerce-system
+      dockerfile: D:/2026/Project/mini-project-ecommerce/dockerfiles/PaymentService.Dockerfile
+    container_name: ecom-payment-service
+    environment:
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=mk123
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/ecom-payment-service.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__AllowInvalid=true
+      - ConnectionStrings__EcommerceProduct=Data Source=host.docker.internal,1433;Initial Catalog=ecom_product_db;User ID=demo;Password=Thinh@zzxx9;Encrypt=True;TrustServerCertificate=True
+      - InternalAuth__Issuer=https://ecom-identity-server-cms
+      - InternalAuthWeb__Issuer=https://ecom-identity
+      - ServiceUrl__ProductServiceUrl=https://ecom-product-service
+    volumes:
+      - ${USERPROFILE}\.aspnet\https:/https:ro
+    ports:
+      - "5007:80"
+      - "50077:443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  notification-service:
+    build:
+      context: D:/2026/Project/ecommerce-system
+      dockerfile: D:/2026/Project/mini-project-ecommerce/dockerfiles/NotificationService.Dockerfile
+    container_name: ecom-notification-service
+    environment:
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=mk123
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/ecom-notification-service.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__AllowInvalid=true
+      - ConnectionStrings__EcommerceNotification=Data Source=host.docker.internal,1433;Initial Catalog=NotificationDB;User ID=demo;Password=Thinh@zzxx9;Encrypt=True;TrustServerCertificate=True
+      - InternalAuth__Issuer=https://ecom-identity-server-cms
+      - InternalAuthWeb__Issuer=https://ecom-identity
+      - RabbitMQSettings__Host=host.docker.internal
+    volumes:
+      - ${USERPROFILE}\.aspnet\https:/https:ro
+    ports:
+      - "5008:80"
+      - "50088:443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  ecom-web:
+    build:
+      context: D:/2026/Project/ecommerce-system
+      dockerfile: D:/2026/Project/mini-project-ecommerce/dockerfiles/EcomWeb.Dockerfile
+    container_name: ecom-web-ui
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=mk123
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/ecom-web-ui.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__AllowInvalid=true
+      - ConfigServiceUrl__GatewayUrl=https://ecom-gateway
+      - ConfigServiceUrl__IdentityUrl=https://ecom-identity
+      - ConfigServiceUrl__IdentityExternalUrl=https://127.0.0.1:50011
+    volumes:
+      - ${USERPROFILE}\.aspnet\https:/https:ro
+    ports:
+      - "8081:80"
+      - "44381:443"
+
+  # ==========================================
+  # NHÓM 2: CMS SERVICES (QUẢN TRỊ)
+  # ==========================================
+  identity-cms:
+    build:
+      context: D:/2026/Project/ecommerce-system
+      dockerfile: D:/2026/Project/mini-project-ecommerce/dockerfiles/CmsIdentity.Dockerfile
+    container_name: ecom-identity-cms
+    environment:
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=mk123
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/ecom-identity-cms.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__AllowInvalid=true
+      - ConnectionStrings__EcommerceIdentityCMS=Data Source=host.docker.internal,1433;Initial Catalog=EcommerceIdentityCMS;User ID=demo;Password=Thinh@zzxx9;Encrypt=True;TrustServerCertificate=True
+      - InternalAuth__Issuer=https://ecom-identity-server-cms
+    volumes:
+      - ${USERPROFILE}\.aspnet\https:/https:ro
+    ports:
+      - "5002:80"
+      - "50022:443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  gateway-cms:
+    build:
+      context: D:/2026/Project/ecommerce-system
+      dockerfile: D:/2026/Project/mini-project-ecommerce/dockerfiles/CmsGateway.Dockerfile
+    container_name: ecom-gateway-cms
+    environment:
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=mk123
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/ecom-gateway-cms.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__AllowInvalid=true
+      - InternalAuth__Issuer=https://ecom-identity-server-cms
+      - InternalServices__UserService=https://ecom-identity-cms
+      - RedisConfig__RedisConnectionString=host.docker.internal:6379
+    volumes:
+      - ${USERPROFILE}\.aspnet\https:/https:ro
+      - D:/2026/Project/mini-project-ecommerce/Config/cms/proxy-config-order-service.yaml:/app/proxy-config-order-service.yaml
+      - D:/2026/Project/mini-project-ecommerce/Config/cms/proxy-config-product-service.yaml:/app/proxy-config-product-service.yaml
+      - D:/2026/Project/mini-project-ecommerce/Config/cms/proxy-config-user-service.yaml:/app/proxy-config-user-service.yaml
+    ports:
+      - "5003:80"
+      - "50033:443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  identity-server-cms:
+    build:
+      context: D:/2026/Project/ecommerce-system
+      dockerfile: D:/2026/Project/mini-project-ecommerce/dockerfiles/CmsIdentityServer.Dockerfile
+    container_name: ecom-identity-server-cms
+    environment:
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=mk123
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/ecom-identity-server-cms.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__AllowInvalid=true
+      - ConnectionStrings__EcomCMS_IdentityServer_DB=Data Source=host.docker.internal,1433;Initial Catalog=EcomCMS_IdentityServer_DB;User ID=demo;Password=Thinh@zzxx9;Encrypt=True;TrustServerCertificate=True
+      - ConfigServiceUrl__EcommerceMVCCMS=https://ecom-cms-ui:44382
+      - ConfigServiceUrl__EcommerceGatewayCMS=https://ecom-gateway-cms:50033
+      - ConfigServiceUrl__EcommerceUserService=https://ecom-identity-cms:50022
+    volumes:
+      - ${USERPROFILE}\.aspnet\https:/https:ro
+    ports:
+      - "5004:80"
+      - "50044:443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  ecom-cms-web:
+    build:
+      context: D:/2026/Project/ecommerce-system
+      dockerfile: D:/2026/Project/mini-project-ecommerce/dockerfiles/CmsEcomWeb.Dockerfile
+    container_name: ecom-cms-ui
+    environment:
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=mk123
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/ecom-cms-ui.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__AllowInvalid=true
+      - ConfigServiceUrl__GatewayUrl=https://ecom-gateway-cms:50033
+      - ConfigServiceUrl__IdentityUrl=https://ecom-identity-server-cms:50044
+    volumes:
+      - ${USERPROFILE}\.aspnet\https:/https:ro
+    ports:
+      - "8082:80"
+      - "44382:443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+networks:
+  default:
+    name: ecom-network
