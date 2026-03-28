@@ -1,5 +1,5 @@
 # 🛒 Ecommerce Microservices System
-#### 📄 Xem chi tiết tại:** [**Project Overview.md**](https://github.com/nguyenthinh28902/mini-project-ecommerce/blob/main/README.md)
+#### 📄 Xem chi tiết tại:** [**Project README.md**](https://github.com/nguyenthinh28902/mini-project-ecommerce/blob/main/README.md)
 Hệ thống thương mại điện tử kiến trúc Microservices tập trung vào bảo mật và hiệu năng.
 *(Dự án đang trong quá trình phát triển tính năng nghiệp vụ)*
 
