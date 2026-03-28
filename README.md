@@ -1,7 +1,7 @@
 # Ecommerce System
 Dự án hệ thống thương mại điện tử
 #### Dự án còn đang phát triển chưa hoàn thành nhiều tính năng nghiệp vụ (tạo dữ liệu mẫu để test).
-
+#### 📄 Xem tóm tắt:** [**Project Overview.md**](https://github.com/nguyenthinh28902/mini-project-ecommerce/blob/main/Overview.md)
 ---
 ### 🔗 Technical Implementation (Chi tiết triển khai kỹ thuật)
 
