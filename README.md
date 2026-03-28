@@ -82,12 +82,19 @@ Hệ thống phân tách luồng người dùng ngay từ cấp độ giao diệ
 * **CMS MVC (Quản trị):** Dashboard nội bộ dành cho đội ngũ vận hành quản lý sản phẩm, đơn hàng và hệ thống.
 
 #### 2. Entry Points & Security (Tầng bảo mật & Điều hướng)
-* **Identity Server (Duende):** Trung tâm định danh (Identity Provider) tập trung, xử lý xác thực theo tiêu chuẩn OIDC/OAuth2. 
-  * *Cơ chế xác thực:* Để đảm bảo tính đóng gói, Identity Server truy vấn thông tin định danh thông qua **API Gateway** thay vì kết nối trực tiếp vào Database của các Service.
-* **API Gateway (YARP):** Sử dụng giải pháp Reverse Proxy mạnh mẽ từ Microsoft để quản lý luồng yêu cầu:
-    * **Public Gateway (Web):** Điều hướng tới các dịch vụ nghiệp vụ công khai. Chặn hoàn toàn quyền truy cập tới dịch vụ quản trị (User Service).
-    * **Admin Gateway (CMS):** Cổng điều hướng toàn diện dành cho các tác vụ quản trị nội bộ.
+* **Identity Server (Duende):** Trung tâm định danh (Identity Provider) tập trung, xử lý xác thực theo tiêu chuẩn OIDC/OAuth2.
+  * **Cơ chế xác thực & Tính đóng gói (Encapsulation):** Để đảm bảo tính đóng gói, Identity Server không kết nối trực tiếp vào Database của các Service. 
+  * **Mối quan hệ Identity & Resource:** **User Service** đóng vai trò là **Resource Server** lưu trữ thông tin định danh. Identity Server không nắm giữ dữ liệu người dùng mà thực hiện truy vấn thông tin (Claims) thông qua **API Gateway**.
+  * **Luồng truy xuất định danh (Internal Data Fetching):** Sử dụng luồng **Client Credentials Grant** để định danh chính hệ thống Identity Server khi gọi vào Gateway.
+  * **Bảo mật nội bộ:** Việc đi qua Gateway giúp kiểm soát quyền truy cập chặt chẽ, đảm bảo chỉ có Identity Provider hợp lệ mới có thể lấy dữ liệu nhạy cảm từ User/Customer Service.
 
+* **API Gateway (YARP):** Sử dụng giải pháp Reverse Proxy từ Microsoft để quản trị luồng yêu cầu:
+  * **Public Gateway (Web):** Điều hướng tới các dịch vụ nghiệp vụ công khai. Chặn hoàn toàn quyền truy cập tới dịch vụ quản trị (User Service).
+  * **Admin Gateway (CMS):** Cổng điều hướng toàn diện dành cho các tác vụ quản trị nội bộ.
+  * **Security Transformation (Security Pattern):** * Triển khai cơ chế **Token Exchange & Identity Delegation** để hoán đổi Public Token thành **Internal JWT (System Token)**. 
+    * Việc này giúp che giấu thông tin nhạy cảm của người dùng cuối trước khi đi vào các Service Backend, đồng thời đơn giản hóa việc xác thực nội bộ.
+    * Sử dụng **Custom Header** (như `X-User-Id`) để truyền tải ngữ cảnh người dùng giữa các dịch vụ mà không cần chuyển tiếp toàn bộ User Token ban đầu.
+    * **Performance Optimization:** Kết hợp với **Distributed Caching (Redis)** tại tầng Service để kiểm tra thông tin người dùng trước khi gọi API, giúp giảm tải cho hệ thống và tối ưu hóa tốc độ phản hồi.
 #### 3. Backend Microservices (Tầng dịch vụ lõi)
 Các dịch vụ được xây dựng độc lập trên nền tảng **.NET Core API**, mỗi dịch vụ chịu trách nhiệm cho một miền nghiệp vụ duy nhất (Domain Driven Design):
 * **User & Customer Service:** Quản lý tài khoản quản trị và hồ sơ khách hàng tách biệt.
@@ -116,7 +123,7 @@ Hệ thống áp dụng cơ chế xác thực tập trung sử dụng giao thứ
     * Sau khi xác thực thành công, Identity Server tổng hợp thông tin định danh (User Claims) để khởi tạo **Access Token (JWT)**.
     * *Lưu ý:* Mọi truy vấn giữa các thành phần hạ tầng trong bước này đều được bảo mật bằng Token nội bộ.
 * **Bước 4 - Token Issuance:** JWT được ký số và trả về cho Client để lưu trữ an toàn tại Secure Storage (Cookie/LocalStorage).
-* **Bước 5 - API Gateway & Token Exchange:** Khi Client gửi request qua **API Gateway**, Gateway thực hiện cơ chế **Token Exchange (Service-to-Service)**: Hoán đổi/cấp mới Token nội bộ để các dịch vụ Backend có thể tin tưởng và xử lý yêu cầu.
+* **Bước 5 - API Gateway & Token Exchange:** Khi Client gửi request qua **API Gateway**, Gateway sử dụng YARP Transforms kết hợp với luồng Token Exchange/Delegation để hoán đổi Token của Client thành Internal Token, giúp các dịch vụ Backend xác thực tin cậy.
 
 ### Internal Communication Pattern (Giao tiếp nội bộ)
 * **Synchronous (Đồng bộ):** Triển khai **gRPC** cho các tác vụ đòi hỏi hiệu năng cao và phản hồi tức thời giữa các Service nội bộ (Ví dụ: Order Service truy vấn dữ liệu tồn kho từ Product Service).
@@ -147,7 +154,7 @@ Dưới đây là cấu trúc JWT được cấp cho `cms_admin_client` sau khi 
     "aud": ["user.api", "product.api"],
     "scope": ["openid", "profile", "email", "user.read", "user.write", "product.read", "order.write"],
     "client_id": "cms_admin_client",
-    "sub": "4"
+    "sub": "4" // Id user.
   }
 }
 ```
