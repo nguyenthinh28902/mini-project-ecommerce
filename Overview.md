@@ -62,7 +62,8 @@ Hệ thống thiết lập ranh giới bảo mật nghiêm ngặt giữa tầng 
     "scope": ["order.internal", "payment.internal", "product.internal", "stock.internal", "user.internal"],
     "client_id": "APIGatewayCMS"
   }
-}```
+}
+```
 **Token Client (Public Token - Client to Gateway)**
 ```json
 {
