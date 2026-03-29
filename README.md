@@ -119,6 +119,7 @@ Hệ thống triển khai mô hình phân quyền hai lớp (Two-tier Authorizat
 
 ## 🛠️ 5. System Workflows (Luồng hoạt động hệ thống)
 ### 🔑 Centralized Authentication Flow (Luồng xác thực tập trung)
+![System Workflows](system-workflow-authentication.png)
 Hệ thống áp dụng cơ chế xác thực tập trung sử dụng giao thức **OpenID Connect (OIDC)** để đảm bảo tính an toàn và đồng nhất giữa các Client:
 * **🛡️ Bước 1 - User Authentication:** Người dùng nhập thông tin đăng nhập qua Website (tích hợp Google định danh) hoặc hệ thống CMS quản trị.
 * **🚀 Bước 2 - Identity Redirection:** Client chuyển tiếp yêu cầu xác thực trực tiếp đến **Identity Server** (IdP). Việc này đảm bảo thông tin nhạy cảm không đi qua các tầng trung gian.
