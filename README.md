@@ -125,7 +125,7 @@ Hệ thống áp dụng cơ chế xác thực tập trung sử dụng giao thứ
 * **🔍 Bước 3 - Identity Verification:** **Identity Server gọi API thông qua Gateway** để kết nối tới **User/Customer Service** nhằm kiểm tra thông tin tài khoản.
     * Sau khi xác thực thành công, Identity Server tổng hợp thông tin định danh (User Claims) để khởi tạo **Access Token (JWT)**.
     * *Lưu ý:* Mọi truy vấn giữa các thành phần hạ tầng trong bước này đều được bảo mật bằng Token nội bộ.
-* **🎫 Bước 4 - Token Issuance:** JWT được ký số và trả về cho Client để lưu trữ an toàn tại Secure Storage (Cookie/LocalStorage).
+* **🎫 Bước 4 - Token Issuance:** JWT được ký số và trả về cho Client. Hệ thống sử dụng .NET Secure Cookie (HttpOnly, SameSite, Secure) để lưu trữ định danh tự động, ngăn chặn các cuộc tấn công XSS và đảm bảo an toàn tuyệt đối cho phiên làm việc.
 * **🔄 Bước 5 - API Gateway & Token Exchange:** Khi Client gửi request qua **API Gateway**, Gateway sử dụng YARP Transforms kết hợp với luồng Token Exchange/Delegation để hoán đổi Token của Client thành Internal Token.
 
 ### 📡 Internal Communication Pattern (Giao tiếp nội bộ)
