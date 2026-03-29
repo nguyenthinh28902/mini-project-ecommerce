@@ -112,6 +112,37 @@ Hệ thống triển khai mô hình phân quyền hai lớp (Two-tier Authorizat
 * **Bảo mật Service-to-Service (S2S):**
     * Sử dụng **System Token** được cấp qua luồng `Client Credentials` để định danh các yêu cầu nội bộ giữa Gateway và các Service.
     * Đảm bảo các API nhạy cảm (như lấy thông tin xác thực nhân sự) chỉ chấp nhận yêu cầu từ các thành phần hợp lệ trong hệ thống.
+* **Cấu hình đa tầng Caching (Hybrid Caching):**
+    * **Application Level (Memory Cache):** Sử dụng `IMemoryCache` kết hợp thuật toán *Sliding Expiration* và *Priority* để giữ các dữ liệu nóng (hot data) ngay tại RAM của ứng dụng. File nghiệp vụ [Ecom.web/CacheService.cs](https://github.com/nguyenthinh28902/ecommerce-web/blob/main/Ecom.Web.Shared/Service/CacheService.cs#L27)
+    ```csharp
+    // Cấu hình Memory Cache trong Program.cs
+    builder.Services.AddMemoryCache(options => {
+        options.SizeLimit = 1000; // Giới hạn tổng số lượng item
+        options.ExpirationScanFrequency = TimeSpan.FromSeconds(30); // Tần suất quét dọn dẹp
+    });
+
+    // Thiết lập cho từng Item
+    var cacheOptions = new MemoryCacheEntryOptions {
+        AbsoluteExpirationRelativeToNow = expiration ?? _defaultExpiration,
+        SlidingExpiration = TimeSpan.FromMinutes(10), // Tự dọn dẹp nếu không truy cập sau 10p
+        Priority = CacheItemPriority.High, // Ưu tiên giữ lại khi RAM đầy
+        Size = 1 
+    };
+    ```
+    * **Infrastructure Level (Redis Stack):** Triển khai Redis với cấu hình tối ưu hóa bộ nhớ thông qua chính sách giải phóng dữ liệu tự động.
+    ```yaml
+    # redis-cache-setup.yml
+    services:
+      redis-cache:
+        image: redis:alpine
+        container_name: my-redis-lru-ttl
+        command: >
+          redis-server 
+          --maxmemory 100mb 
+          --maxmemory-policy volatile-lru # Thuật toán LRU kết hợp TTL
+        ports:
+          - "6380:6379"
+    ```
 #### 🗄️ 6. Persistence Layer (Tầng dữ liệu)
 * **Chiến lược:** Áp dụng nghiêm ngặt mô hình **Database per Service**. Mỗi Microservice sở hữu cơ sở dữ liệu riêng, đảm bảo tính độc lập và khả năng mở rộng quy mô linh hoạt.
 * **Quy mô:** 8 Database SQL Server tách biệt được quản lý thông qua Entity Framework Core.
