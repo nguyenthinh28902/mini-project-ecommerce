@@ -106,8 +106,34 @@ Các dịch vụ được xây dựng độc lập trên nền tảng **.NET Cor
 Kiến trúc kết hợp linh hoạt giữa hai mô hình giao tiếp để tối ưu hóa hiệu suất:
 * **Synchronous (Đồng bộ) qua gRPC:** Ưu tiên cho các tác vụ cần phản hồi tức thì với độ trễ cực thấp (ví dụ: Order Service kiểm tra giá và tồn kho thực tế từ Product Service).
 * **Asynchronous (Bất đồng bộ) qua RabbitMQ:** Sử dụng Message Broker để truyền tin dựa trên sự kiện (Event-driven). Giúp hệ thống giảm tải và đảm bảo tính sẵn sàng (ví dụ: Notification Service tiêu thụ các sự kiện đơn hàng để gửi mail mà không làm chậm quá trình thanh toán).
+#### 5. Authorization Strategy (Chiến lược phân quyền)
+Hệ thống triển khai mô hình phân quyền hai lớp (Two-tier Authorization) để kiểm soát truy cập chặt chẽ:
 
-#### 5. Persistence Layer (Tầng dữ liệu)
+* **Hệ thống phân quyền dựa trên Scope (Client-Level):** * Sử dụng các Scopes như `openid`, `profile`, `email`, `user.read`, `user.write`, `product.read`, `order.write`.
+    * Xác định quyền hạn của từng ứng dụng Client khi truy cập vào các bộ tài nguyên API.
+* **Hệ thống phân quyền dựa trên Role & Claims (User-Level):**
+    * Sử dụng thông tin **Role** để phân quyền chi tiết cho người dùng (Staff/Admin).
+    * **User Service** đóng vai trò cung cấp Claims để Identity Server đóng gói vào Token.
+* **Cơ chế chuyển tiếp ngữ cảnh (Context Passing):**
+    * Gateway hoán đổi Public Token thành **Internal JWT (System Token)** thông qua `ITokenClientService`.
+    * Sử dụng **Custom Header** (`X-User-Id`, `X-User-Email`, `X-User-Phone`) để truyền định danh và thông tin liên lạc của người dùng giữa các dịch vụ nội bộ.
+    * Các Service Backend (như `CurrentCustomerService`) sẽ ưu tiên đọc thông tin từ Header do Gateway gán vào để xác định danh tính người dùng.
+#### 6. Kỹ thuật xử lý dữ liệu & Hiệu năng (Performance & Data Handling)
+
+Để tối ưu hóa trải nghiệm và đảm bảo tính chính xác của dữ liệu, hệ thống triển khai các kỹ thuật sau:
+
+* **Chiến lược "Cache-Aside" cho Identity:**
+    * Trước khi thực hiện gọi API liên dịch vụ (Inter-service call), hệ thống luôn kiểm tra dữ liệu tại **Distributed Cache (Redis)** thông qua `IUserCacheService`.
+    * Chỉ khi xảy ra **Cache Miss**, hệ thống mới thực hiện truy vấn tới Resource Server, sau đó cập nhật ngược lại vào Cache để tối ưu cho các yêu cầu sau.
+
+* **Cơ chế gán định danh từ Gateway (Header Enrichment):**
+    * Gateway thực hiện gán các thông tin định danh như `X-User-Id`, `X-User-Email`, `X-User-Phone` vào Header của request sau khi đã xác thực.
+    * Tại các Service nội bộ, `CurrentCustomerService` sẽ ưu tiên trích xuất dữ liệu từ các Header này để xác định ngữ cảnh người dùng hiện tại mà không cần truy vấn lại Database.
+
+* **Bảo mật Service-to-Service (S2S):**
+    * Sử dụng **System Token** được cấp qua luồng `Client Credentials` để định danh các yêu cầu nội bộ giữa Gateway và các Service.
+    * Đảm bảo các API nhạy cảm (như lấy thông tin xác thực nhân sự) chỉ chấp nhận yêu cầu từ các thành phần hợp lệ trong hệ thống.
+#### 7. Persistence Layer (Tầng dữ liệu)
 * **Chiến lược:** Áp dụng nghiêm ngặt mô hình **Database per Service**. Mỗi Microservice sở hữu cơ sở dữ liệu riêng, đảm bảo tính độc lập và khả năng mở rộng quy mô linh hoạt.
 * **Quy mô:** 8 Database SQL Server tách biệt được quản lý thông qua Entity Framework Core.
 
