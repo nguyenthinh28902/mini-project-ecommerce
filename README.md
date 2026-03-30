@@ -117,7 +117,7 @@ Hệ thống kết hợp giao tiếp linh hoạt và cấu trúc dữ liệu đ�
 
 * **Chiến lược:** Áp dụng nghiêm ngặt mô hình **Database per Service**. Mỗi Microservice sở hữu DB riêng, đảm bảo tính độc lập và khả năng mở rộng linh hoạt.
 * **Quy mô:** Quản lý **8 Database SQL Server** tách biệt thông qua **Entity Framework Core**.
-
+---
 
 ## 🛠️ 6. System Workflows (Luồng hoạt động hệ thống)
 ### 🔑 6.1 Centralized Authentication Flow (Luồng xác thực tập trung)
