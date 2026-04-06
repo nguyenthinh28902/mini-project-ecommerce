@@ -173,7 +173,7 @@ Dưới đây là cấu trúc JWT được cấp cho `cms_admin_client` sau khi 
 }
 ```
 ---
-## 🏗️ Database Architecture: Read/Write Splitting
+## 🏗️ 8.Database Architecture: Read/Write Splitting
 
 Hệ thống triển khai kiến trúc tách biệt luồng dữ liệu **Đọc (Read)** và **Ghi (Write)** nhằm tối ưu hóa hiệu suất xử lý và đảm bảo khả năng mở rộng cho các dịch vụ Backend.
 ![Design Replication Database](design-replication-database.png)
