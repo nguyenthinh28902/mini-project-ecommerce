@@ -1,0 +1,14 @@
+services:
+  haproxy-proxy:
+    image: haproxy:latest
+    container_name: my-haproxy
+    ports:
+      - "5000:5000" # Cổng cho luồng Ghi (Master)
+      - "5001:5001" # Cổng cho luồng Đọc (Replica)
+    volumes:
+      # Gắn file cấu hình từ máy thật vào container
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    extra_hosts:
+      # Thay thế cho tham số --add-host để gọi ngược ra SQL Server trên máy thật
+      - "host.docker.internal:host-gateway"
+    restart: always # Tự động chạy lại nếu máy tính khởi động lại hoặc container bị lỗi
