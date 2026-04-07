@@ -204,5 +204,5 @@ Giải pháp sử dụng cơ chế Dependency Injection (DI) trong .NET để qu
 ### 🛠️ Tech Stack Integration
 * **.NET 10** & Entity Framework Core.
 * **HAProxy 3.3.6** (Cấu hình LF chuẩn Linux).
-* **Docker Desktop** (WSL 2 Backend).
+* **Docker Desktop** (HAProxy).
 * **SQL Server Replication** (Transactional / Snapshot).
