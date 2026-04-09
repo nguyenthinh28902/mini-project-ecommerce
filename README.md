@@ -37,7 +37,7 @@ Dự án hệ thống thương mại điện tử
 * **Communication:** gRPC (Đồng bộ), RabbitMQ / MassTransit (Bất đồng bộ).
 * **Caching & Performance:** Redis Cache (Docker), Memory Cache, Redis Rate Limiting.
 * **State Management:** Secure Cookies, Session Management.  
-Xem chi tiết tại: [Giải thích công nghệ](#7-technology-used-công-nghệ-sử-dụng)
+Xem chi tiết tại: [7. Technology Used (Công nghệ sử dụng)](#7-technology-used-công-nghệ-sử-dụng)
 ---
 ## 📂 2. Project Structure (Cấu trúc dự án)
 ### A. Presentation Layer (Tầng giao diện)
