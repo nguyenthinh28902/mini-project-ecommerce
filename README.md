@@ -28,6 +28,16 @@ Dự án hệ thống thương mại điện tử
 
 ## 1. System Architecture (Kiến trúc hệ thống)
 ![Sơ đồ hệ thống](images/system-design-core-backend-services.png)
+
+### 🛠️ Technology Stack (Công nghệ sử dụng)
+* **Core Framework:** .NET 10 / .NET 8, ASP.NET Core MVC & Web API.
+* **Databases & Persistence:** SQL Server (Database per Service), Entity Framework Core.
+* **Infrastructure:** YARP (API Gateway), Duende IdentityServer.
+* **Security & Protocols:** OpenID Connect (OIDC), OAuth 2.0, JWT Bearer, Policy-based Authorization.
+* **Communication:** gRPC (Đồng bộ), RabbitMQ / MassTransit (Bất đồng bộ).
+* **Caching & Performance:** Redis Cache (Docker), Memory Cache, Redis Rate Limiting.
+* **State Management:** Secure Cookies, Session Management.  
+
 ---
 ## 📂 2. Project Structure (Cấu trúc dự án)
 ### A. Presentation Layer (Tầng giao diện)
@@ -57,29 +67,12 @@ Dự án hệ thống thương mại điện tử
 | **Notification Service** | Worker xử lý gửi thông báo (Email/Push) qua hàng đợi RabbitMQ. | [github.com/Ecom.Notification](https://github.com/nguyenthinh28902/ecom-notification-service) |
 ---
 
-## 🛠️ 3. Technology Stack (Công nghệ sử dụng)
-
-* **Core Framework:** .NET 10 / .NET 8, ASP.NET Core MVC & Web API.
-* **Databases & Persistence:** SQL Server (Database per Service), Entity Framework Core.
-* **Infrastructure:** YARP (API Gateway), Duende IdentityServer.
-* **Security & Protocols:** OpenID Connect (OIDC), OAuth 2.0, JWT Bearer, Policy-based Authorization.
-* **Communication:** gRPC (Đồng bộ), RabbitMQ / MassTransit (Bất đồng bộ).
-* **Caching & Performance:** Redis Cache (Docker), Memory Cache, Redis Rate Limiting.
-* **State Management:** Secure Cookies, Session Management.  
----
-
-### 🚀 Điểm nổi bật về hạ tầng
-* **Scalability:** Sử dụng **YARP** và **RabbitMQ** giúp hệ thống dễ dàng mở rộng các dịch vụ độc lập mà không ảnh hưởng đến luồng chính.
-* **Performance:** Tối ưu hóa độ trễ thông qua giao tiếp nội bộ bằng **gRPC** và cơ chế lưu trữ đệm phân tán với **Redis**.
-* **Security Standard:** Triển khai chặt chẽ các giao thức bảo mật tiêu chuẩn ngành (**OpenID Connect & OAuth 2.0**) để bảo vệ dữ liệu người dùng.
----
-
-### 🏛️ 4. Architecture Description (Mô tả kiến trúc)
-#### 🖥️ 4.1 Client Layer (Tầng giao diện & Người dùng)
+### 🏛️ 3. Architecture Description (Mô tả kiến trúc)
+#### 🖥️ 3.1 Client Layer (Tầng giao diện & Người dùng)
 Hệ thống phân tách luồng người dùng ngay từ cấp độ giao diện để đảm bảo tính bảo mật và trải nghiệm chuyên biệt:
 * **Web MVC (Khách hàng):** Storefront phục vụ người dùng cuối tham quan, mua sắm và thanh toán trực tuyến.
 * **CMS MVC (Quản trị):** Dashboard nội bộ dành cho đội ngũ vận hành quản lý sản phẩm, đơn hàng và hệ thống.
-#### 🛡️ 4.2 Entry Points & Security (Tầng bảo mật & Điều hướng)
+#### 🛡️ 3.2 Entry Points & Security (Tầng bảo mật & Điều hướng)
 * **Identity Server (Duende):** Trung tâm định danh (Identity Provider) tập trung, xử lý xác thực theo tiêu chuẩn OIDC/OAuth2.
   * **Cơ chế xác thực & Tính đóng gói (Encapsulation):** Để đảm bảo tính đóng gói, Identity Server không kết nối trực tiếp vào Database của các Service. 
   * **Mối quan hệ Identity & Resource:** **User Service** đóng vai trò là **Resource Server** lưu trữ thông tin định danh. Identity Server không nắm giữ dữ liệu người dùng mà thực hiện truy vấn thông tin (Claims) thông qua **API Gateway**.
@@ -92,13 +85,13 @@ Hệ thống phân tách luồng người dùng ngay từ cấp độ giao diệ
     * Việc này giúp che giấu thông tin nhạy cảm của người dùng cuối trước khi đi vào các Service Backend, đồng thời đơn giản hóa việc xác thực nội bộ.
     * Sử dụng **Custom Header** (như `X-User-Id`) để truyền tải ngữ cảnh người dùng giữa các dịch vụ mà không cần chuyển tiếp toàn bộ User Token ban đầu.
     * **Performance Optimization:** Kết hợp với **Distributed Caching (Redis)** tại tầng Service để kiểm tra thông tin người dùng trước khi gọi API, giúp giảm tải cho hệ thống và tối ưu hóa tốc độ phản hồi.
-#### ⚙️ 4.3 Backend Microservices (Tầng dịch vụ lõi)
+#### ⚙️ 3.3 Backend Microservices (Tầng dịch vụ lõi)
 Các dịch vụ được xây dựng độc lập trên nền tảng **.NET Core API**, mỗi dịch vụ chịu trách nhiệm cho một miền nghiệp vụ duy nhất (Domain Driven Design):
 * **User & Customer Service:** Quản lý tài khoản quản trị và hồ sơ khách hàng tách biệt.
 * **Product Service:** Xử lý danh mục sản phẩm và trạng thái tồn kho (Stock).
 * **Order & Payment Service:** Đảm nhận quy trình từ giỏ hàng, đặt hàng đến xử lý thanh toán và đối soát.
 * **Notification Service:** Hệ thống thông báo đa kênh, hoạt động như một Worker xử lý nền.
-#### ⚡ 4.4 Performance & Data Handling (Kỹ thuật xử lý dữ liệu & Hiệu năng)
+#### ⚡ 3.4 Performance & Data Handling (Kỹ thuật xử lý dữ liệu & Hiệu năng)
 Để tối ưu hóa trải nghiệm và đảm bảo tính chính xác của dữ liệu, hệ thống triển khai các kỹ thuật sau:
 * **Configuration:** Xem cấu hình Redis LRU, TTL  tại [redis-cache-setup.yml](https://github.com/nguyenthinh28902/mini-project-ecommerce/blob/main/redis-cache-setup.yml)
 * **Chiến lược "Cache-Aside" cho Identity:**
@@ -111,39 +104,39 @@ Các dịch vụ được xây dựng độc lập trên nền tảng **.NET Cor
     * Sử dụng **System Token** được cấp qua luồng `Client Credentials` để định danh các yêu cầu nội bộ giữa Gateway và các Service.
     * Đảm bảo các API nhạy cảm (như lấy thông tin xác thực nhân sự) chỉ chấp nhận yêu cầu từ các thành phần hợp lệ trong hệ thống.
 ---
-## 📡 5. Giao tiếp Nội bộ & Tầng Dữ liệu (Internal & Persistence)
+## 📡 4. Giao tiếp Nội bộ & Tầng Dữ liệu (Internal & Persistence)
 
 Hệ thống kết hợp giao tiếp linh hoạt và cấu trúc dữ liệu độc lập để tối ưu hiệu năng và khả năng mở rộng.
 
-### 📡 5.1. Giao tiếp Nội bộ (Communication Patterns)
+### 📡 4.1. Giao tiếp Nội bộ (Communication Patterns)
 
 *  ⚡**Synchronous (Đồng bộ) - gRPC:** * Sử dụng cho các tác vụ yêu cầu hiệu năng cao và phản hồi tức thời.
     * *Ví dụ:* **Order Service** truy vấn tồn kho từ **Product Service** trước khi xác nhận đơn.
 * 📬 **Asynchronous (Bất đồng bộ) - RabbitMQ:** * Triển khai kiến trúc hướng sự kiện (Event-driven).
     * *Ví dụ:* **Notification Service** tiêu thụ sự kiện từ hàng đợi để gửi thông báo mà không làm tắc nghẽn luồng chính.
 
-### 🗄️ 5.2. Tầng Dữ liệu (Persistence Layer)
+### 🗄️ 4.2. Tầng Dữ liệu (Persistence Layer)
 
 * **Chiến lược:** Áp dụng nghiêm ngặt mô hình **Database per Service**. Mỗi Microservice sở hữu DB riêng, đảm bảo tính độc lập và khả năng mở rộng linh hoạt.
 * **Quy mô:** Quản lý **8 Database SQL Server** tách biệt thông qua **Entity Framework Core**.
-### 🏗️ 5.3 Database Architecture: Read/Write Splitting
+### 🏗️ 4.3 Database Architecture: Read/Write Splitting
 
 Hệ thống triển khai kiến trúc tách biệt luồng dữ liệu **Đọc (Read)** và **Ghi (Write)** nhằm tối ưu hóa hiệu suất xử lý và đảm bảo khả năng mở rộng cho các dịch vụ Backend.
 ![Design Replication Database](images/design-replication-database.png)
-#### 🛰️ 5.3.1 Load Balancing with HAProxy
+#### 🛰️ 4.3.1 Load Balancing with HAProxy
 Thay vì kết nối trực tiếp đến các node cơ sở dữ liệu, ứng dụng giao tiếp thông qua **HAProxy** đóng vai trò là bộ điều phối (Load Balancer) trung tâm:
 👉 **Chi tiết cấu hình tại:** [./DatabaseProxy/haproxy.cfg](./DatabaseProxy/haproxy.cfg)
 * **Port 5000 (Write Channel):** Luôn điều hướng các yêu cầu đến **SQL Server Master** để thực hiện các tác vụ thay đổi dữ liệu (CUD).
 * **Port 5001 (Read Channel):** Tự động cân bằng tải theo thuật toán **Round Robin** giữa các cụm **SQL Server Replicas** (Slaves).
 * **Health Check:** HAProxy liên tục kiểm tra trạng thái sống/chết của các node; nếu một Replica gặp sự cố, traffic sẽ tự động được điều hướng sang các node khỏe mạnh còn lại.
   
-#### 🗄️ 5.3.2 Multi-Instance Replication Setup
+#### 🗄️ 4.3.2 Multi-Instance Replication Setup
 Khác với việc chỉ dùng nhiều Database trên cùng một Server, hệ thống được cấu hình chạy trên các **SQL Server Instances độc lập** để đảm bảo tính sẵn sàng cao:
 
 ![SQL Server Replication Setup](images/config-sql-server-replication.png)
 
 *Cấu hình Replication giữa Instance gốc và Instance `.\SQL_REPLICA` riêng biệt.*
-#### 💻 5.3.3 Implementation Details
+#### 💻 4.3.3 Implementation Details
 Giải pháp sử dụng cơ chế Dependency Injection (DI) trong .NET để quản lý hai ngữ cảnh dữ liệu (DbContext) riêng biệt:
 
 1. **`EcomProductDbContext` (Master Context):**
@@ -154,14 +147,14 @@ Giải pháp sử dụng cơ chế Dependency Injection (DI) trong .NET để qu
    * Cấu hình `QueryTrackingBehavior.NoTracking` mặc định để tối ưu bộ nhớ và tốc độ truy vấn.
    * Chặn tuyệt đối các thao tác ghi bằng cách ghi đè hàm `SaveChangesAsync()`, đảm bảo an toàn cho dữ liệu tại các node Slave.
 
-#### 🛠️ 5.3.4 Tech Stack Integration
+#### 🛠️ 4.3.4 Tech Stack Integration
 * **HAProxy 3.3.6** (Cấu hình LF chuẩn Linux).
 * **Docker Desktop** (HAProxy).
 * **SQL Server Replication** (Transactional / Snapshot).
 ---
 
-## 🛠️ 6. System Workflows (Luồng hoạt động hệ thống)
-### 🔑 6.1 Centralized Authentication Flow (Luồng xác thực tập trung)
+## 🛠️ 5. System Workflows (Luồng hoạt động hệ thống)
+### 🔑 5.1 Centralized Authentication Flow (Luồng xác thực tập trung)
 ![System Workflows](images/system-workflow-authentication.png)
 Hệ thống áp dụng cơ chế xác thực tập trung sử dụng giao thức **OpenID Connect (OIDC)** để đảm bảo tính an toàn và đồng nhất giữa các Client:
 * **🛡️ Bước 1 - User Authentication:** Người dùng nhập thông tin đăng nhập qua Website (tích hợp Google định danh) hoặc hệ thống CMS quản trị.
@@ -171,7 +164,7 @@ Hệ thống áp dụng cơ chế xác thực tập trung sử dụng giao thứ
     * *Lưu ý:* Mọi truy vấn giữa các thành phần hạ tầng trong bước này đều được bảo mật bằng Token nội bộ.
 * **🎫 Bước 4 - Token Issuance:** JWT được ký số và trả về cho Client. Hệ thống sử dụng .NET Secure Cookie (HttpOnly, SameSite, Secure) để lưu trữ định danh tự động, ngăn chặn các cuộc tấn công XSS và đảm bảo an toàn tuyệt đối cho phiên làm việc.
 * **🔄 Bước 5 - API Gateway & Token Exchange:** Khi Client gửi request qua **API Gateway**, Gateway sử dụng YARP Transforms kết hợp với luồng Token Exchange/Delegation để hoán đổi Token của Client thành Internal Token.
-### 🔐 6.2 Authorization Strategy (Chiến lược phân quyền)
+### 🔐 5.2 Authorization Strategy (Chiến lược phân quyền)
 Hệ thống triển khai mô hình phân quyền hai lớp (Two-tier Authorization) để kiểm soát truy cập chặt chẽ:
 * 🌐 **Client-Level Authorization (Phân quyền ứng dụng):**
     * Sử dụng các Scopes như `openid`, `profile`, `email`, `user.read`, `user.write`, `product.read`, `order.write`.
@@ -185,7 +178,7 @@ Hệ thống triển khai mô hình phân quyền hai lớp (Two-tier Authorizat
     * Các Service Backend (như `CurrentCustomerService`) sẽ ưu tiên đọc thông tin từ Header do Gateway gán vào để xác định danh tính người dùng.
 ---
 
-## 🔑 7. Access Token Examples (Ví dụ Token)
+## 🔑 6. Access Token Examples (Ví dụ Token)
 **Token nội bộ (Internal Token)**
 Dưới đây là cấu trúc JWT được cấp cho `APIGatewayCMS` sau khi giải mã:
 ```json
