@@ -2,7 +2,7 @@
 
 Hệ thống thương mại điện tử kiến trúc Microservices, tập trung vào giải pháp bảo mật và tối ưu hóa hiệu năng giao tiếp nội bộ.
 
-![Sơ đồ hệ thống](system-design-core-backend-services.png)
+![Sơ đồ hệ thống](images/system-design-core-backend-services.png)
 
 ### 🏗️ Kiến trúc & Công nghệ (Tech Stack)
 
@@ -16,7 +16,7 @@ Hệ thống thương mại điện tử kiến trúc Microservices, tập trung
 
 ### 🛡️ Giải pháp Bảo mật & Xác thực
 
-![System Workflows](system-workflow-authentication.png)
+![System Workflows](images/system-workflow-authentication.png)
 
 * **Identity Server (IdP):** Xác thực tập trung OIDC/OAuth2, tách biệt luồng Web và CMS.
 * **Two-tier Authorization:** Phân quyền qua **Scopes** (ứng dụng) và **Claims/Roles** (người dùng).

@@ -27,7 +27,7 @@ Dự án hệ thống thương mại điện tử
 ---
 
 ## 1. System Architecture (Kiến trúc hệ thống)
-![Sơ đồ hệ thống](system-design-core-backend-services.png)
+![Sơ đồ hệ thống](images/system-design-core-backend-services.png)
 ---
 ## 📂 2. Project Structure (Cấu trúc dự án)
 ### A. Presentation Layer (Tầng giao diện)
@@ -121,7 +121,7 @@ Hệ thống kết hợp giao tiếp linh hoạt và cấu trúc dữ liệu đ�
 
 ## 🛠️ 6. System Workflows (Luồng hoạt động hệ thống)
 ### 🔑 6.1 Centralized Authentication Flow (Luồng xác thực tập trung)
-![System Workflows](system-workflow-authentication.png)
+![System Workflows](images/system-workflow-authentication.png)
 Hệ thống áp dụng cơ chế xác thực tập trung sử dụng giao thức **OpenID Connect (OIDC)** để đảm bảo tính an toàn và đồng nhất giữa các Client:
 * **🛡️ Bước 1 - User Authentication:** Người dùng nhập thông tin đăng nhập qua Website (tích hợp Google định danh) hoặc hệ thống CMS quản trị.
 * **🚀 Bước 2 - Identity Redirection:** Client chuyển tiếp yêu cầu xác thực trực tiếp đến **Identity Server** (IdP). Việc này đảm bảo thông tin nhạy cảm không đi qua các tầng trung gian.
@@ -176,7 +176,7 @@ Dưới đây là cấu trúc JWT được cấp cho `cms_admin_client` sau khi 
 ## 🏗️ 8.Database Architecture: Read/Write Splitting
 
 Hệ thống triển khai kiến trúc tách biệt luồng dữ liệu **Đọc (Read)** và **Ghi (Write)** nhằm tối ưu hóa hiệu suất xử lý và đảm bảo khả năng mở rộng cho các dịch vụ Backend.
-![Design Replication Database](design-replication-database.png)
+![Design Replication Database](images/design-replication-database.png)
 ### 🛰️ Load Balancing with HAProxy
 Thay vì kết nối trực tiếp đến các node cơ sở dữ liệu, ứng dụng giao tiếp thông qua **HAProxy** đóng vai trò là bộ điều phối (Load Balancer) trung tâm:
 👉 **Chi tiết cấu hình tại:** [./DatabaseProxy/haproxy.cfg](./DatabaseProxy/haproxy.cfg)
@@ -187,7 +187,7 @@ Thay vì kết nối trực tiếp đến các node cơ sở dữ liệu, ứng 
 ### 🗄️ Multi-Instance Replication Setup
 Khác với việc chỉ dùng nhiều Database trên cùng một Server, hệ thống được cấu hình chạy trên các **SQL Server Instances độc lập** để đảm bảo tính sẵn sàng cao:
 
-![SQL Server Replication Setup](config-sql-server-replication.png)
+![SQL Server Replication Setup](images/config-sql-server-replication.png)
 
 *Cấu hình Replication giữa Instance gốc và Instance `.\SQL_REPLICA` riêng biệt.*
 ### 💻 Implementation Details
