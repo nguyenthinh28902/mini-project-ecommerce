@@ -5,6 +5,7 @@ services:
     ports:
       - "5000:5000" # Cổng cho luồng Ghi (Master)
       - "5001:5001" # Cổng cho luồng Đọc (Replica)
+      - "8080:8080" # Cổng để xem giao diện quản lý
     volumes:
       # Gắn file cấu hình từ máy thật vào container
       - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro

@@ -1,3 +1,4 @@
+#cấu hình thuật toán lru và ttl
 services:
   redis-cache:
     image: redis:alpine
@@ -5,7 +6,7 @@ services:
     command: >
       redis-server 
       --maxmemory 100mb 
-      --maxmemory-policy volatile-lru # cấu hình thuật toán lru và ttl
+      --maxmemory-policy volatile-lru
     ports:
       - "6380:6379" 
     restart: always
