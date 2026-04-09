@@ -60,14 +60,12 @@ Dự án hệ thống thương mại điện tử
 ## 🛠️ 3. Technology Stack (Công nghệ sử dụng)
 
 * **Core Framework:** .NET 10 / .NET 8, ASP.NET Core MVC & Web API.
-* **Infrastructure:** YARP (API Gateway), Duende IdentityServer / IdentityServer4.
-* **Security & Protocols:** OpenID Connect (OIDC), OAuth 2.0, JWT Bearer, Policy-based Authorization.
 * **Databases & Persistence:** SQL Server (Database per Service), Entity Framework Core.
+* **Infrastructure:** YARP (API Gateway), Duende IdentityServer.
+* **Security & Protocols:** OpenID Connect (OIDC), OAuth 2.0, JWT Bearer, Policy-based Authorization.
 * **Communication:** gRPC (Đồng bộ), RabbitMQ / MassTransit (Bất đồng bộ).
 * **Caching & Performance:** Redis Cache (Docker), Memory Cache, Redis Rate Limiting.
-* **State Management:** Secure Cookies, Session Management.
-* **UI Stack:** Tailwind CSS.
-  
+* **State Management:** Secure Cookies, Session Management.  
 ---
 
 ### 🚀 Điểm nổi bật về hạ tầng
