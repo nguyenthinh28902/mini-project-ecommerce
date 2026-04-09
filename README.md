@@ -117,6 +117,38 @@ Hệ thống kết hợp giao tiếp linh hoạt và cấu trúc dữ liệu đ�
 
 * **Chiến lược:** Áp dụng nghiêm ngặt mô hình **Database per Service**. Mỗi Microservice sở hữu DB riêng, đảm bảo tính độc lập và khả năng mở rộng linh hoạt.
 * **Quy mô:** Quản lý **8 Database SQL Server** tách biệt thông qua **Entity Framework Core**.
+### 🏗️ 5.3 Database Architecture: Read/Write Splitting
+
+Hệ thống triển khai kiến trúc tách biệt luồng dữ liệu **Đọc (Read)** và **Ghi (Write)** nhằm tối ưu hóa hiệu suất xử lý và đảm bảo khả năng mở rộng cho các dịch vụ Backend.
+![Design Replication Database](images/design-replication-database.png)
+#### 🛰️ 5.3.1 Load Balancing with HAProxy
+Thay vì kết nối trực tiếp đến các node cơ sở dữ liệu, ứng dụng giao tiếp thông qua **HAProxy** đóng vai trò là bộ điều phối (Load Balancer) trung tâm:
+👉 **Chi tiết cấu hình tại:** [./DatabaseProxy/haproxy.cfg](./DatabaseProxy/haproxy.cfg)
+* **Port 5000 (Write Channel):** Luôn điều hướng các yêu cầu đến **SQL Server Master** để thực hiện các tác vụ thay đổi dữ liệu (CUD).
+* **Port 5001 (Read Channel):** Tự động cân bằng tải theo thuật toán **Round Robin** giữa các cụm **SQL Server Replicas** (Slaves).
+* **Health Check:** HAProxy liên tục kiểm tra trạng thái sống/chết của các node; nếu một Replica gặp sự cố, traffic sẽ tự động được điều hướng sang các node khỏe mạnh còn lại.
+  
+#### 🗄️ 5.3.2 Multi-Instance Replication Setup
+Khác với việc chỉ dùng nhiều Database trên cùng một Server, hệ thống được cấu hình chạy trên các **SQL Server Instances độc lập** để đảm bảo tính sẵn sàng cao:
+
+![SQL Server Replication Setup](images/config-sql-server-replication.png)
+
+*Cấu hình Replication giữa Instance gốc và Instance `.\SQL_REPLICA` riêng biệt.*
+#### 💻 5.3.3 Implementation Details
+Giải pháp sử dụng cơ chế Dependency Injection (DI) trong .NET để quản lý hai ngữ cảnh dữ liệu (DbContext) riêng biệt:
+
+1. **`EcomProductDbContext` (Master Context):**
+   * Kết nối qua cổng **5000**.
+   * Sử dụng `IUnitOfWork` để quản lý các nghiệp vụ ghi và giao dịch (Transaction).
+2. **`ReadOnlyDbContext` (Replica Context):**
+   * Kết nối qua cổng **5001**.
+   * Cấu hình `QueryTrackingBehavior.NoTracking` mặc định để tối ưu bộ nhớ và tốc độ truy vấn.
+   * Chặn tuyệt đối các thao tác ghi bằng cách ghi đè hàm `SaveChangesAsync()`, đảm bảo an toàn cho dữ liệu tại các node Slave.
+
+#### 🛠️ 5.3.4 Tech Stack Integration
+* **HAProxy 3.3.6** (Cấu hình LF chuẩn Linux).
+* **Docker Desktop** (HAProxy).
+* **SQL Server Replication** (Transactional / Snapshot).
 ---
 
 ## 🛠️ 6. System Workflows (Luồng hoạt động hệ thống)
@@ -173,36 +205,3 @@ Dưới đây là cấu trúc JWT được cấp cho `cms_admin_client` sau khi 
 }
 ```
 ---
-## 🏗️ 8.Database Architecture: Read/Write Splitting
-
-Hệ thống triển khai kiến trúc tách biệt luồng dữ liệu **Đọc (Read)** và **Ghi (Write)** nhằm tối ưu hóa hiệu suất xử lý và đảm bảo khả năng mở rộng cho các dịch vụ Backend.
-![Design Replication Database](images/design-replication-database.png)
-### 🛰️ Load Balancing with HAProxy
-Thay vì kết nối trực tiếp đến các node cơ sở dữ liệu, ứng dụng giao tiếp thông qua **HAProxy** đóng vai trò là bộ điều phối (Load Balancer) trung tâm:
-👉 **Chi tiết cấu hình tại:** [./DatabaseProxy/haproxy.cfg](./DatabaseProxy/haproxy.cfg)
-* **Port 5000 (Write Channel):** Luôn điều hướng các yêu cầu đến **SQL Server Master** để thực hiện các tác vụ thay đổi dữ liệu (CUD).
-* **Port 5001 (Read Channel):** Tự động cân bằng tải theo thuật toán **Round Robin** giữa các cụm **SQL Server Replicas** (Slaves).
-* **Health Check:** HAProxy liên tục kiểm tra trạng thái sống/chết của các node; nếu một Replica gặp sự cố, traffic sẽ tự động được điều hướng sang các node khỏe mạnh còn lại.
-  
-### 🗄️ Multi-Instance Replication Setup
-Khác với việc chỉ dùng nhiều Database trên cùng một Server, hệ thống được cấu hình chạy trên các **SQL Server Instances độc lập** để đảm bảo tính sẵn sàng cao:
-
-![SQL Server Replication Setup](images/config-sql-server-replication.png)
-
-*Cấu hình Replication giữa Instance gốc và Instance `.\SQL_REPLICA` riêng biệt.*
-### 💻 Implementation Details
-Giải pháp sử dụng cơ chế Dependency Injection (DI) trong .NET để quản lý hai ngữ cảnh dữ liệu (DbContext) riêng biệt:
-
-1. **`EcomProductDbContext` (Master Context):**
-   * Kết nối qua cổng **5000**.
-   * Sử dụng `IUnitOfWork` để quản lý các nghiệp vụ ghi và giao dịch (Transaction).
-2. **`ReadOnlyDbContext` (Replica Context):**
-   * Kết nối qua cổng **5001**.
-   * Cấu hình `QueryTrackingBehavior.NoTracking` mặc định để tối ưu bộ nhớ và tốc độ truy vấn.
-   * Chặn tuyệt đối các thao tác ghi bằng cách ghi đè hàm `SaveChangesAsync()`, đảm bảo an toàn cho dữ liệu tại các node Slave.
-
-### 🛠️ Tech Stack Integration
-* **.NET 10** & Entity Framework Core.
-* **HAProxy 3.3.6** (Cấu hình LF chuẩn Linux).
-* **Docker Desktop** (HAProxy).
-* **SQL Server Replication** (Transactional / Snapshot).
