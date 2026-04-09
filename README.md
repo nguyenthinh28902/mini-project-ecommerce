@@ -58,11 +58,22 @@ Dự án hệ thống thương mại điện tử
 ---
 
 ## 🛠️ 3. Technology Stack (Công nghệ sử dụng)
-* **Backend Framework:** .NET 10, Entity Framework Core.
-* **Infrastructure:** YARP (Yet Another Reverse Proxy), Duende.IdentityServer.
-* **Databases:** SQL Server (Mô hình Database per Service).
-* **Communication:** gRPC (Đồng bộ), RabbitMQ (Bất đồng bộ).
-* **Security & Packages:** Identity Server, JWT, Secure Cookies, Redis.
+
+* **Core Framework:** .NET 10 / .NET 8, ASP.NET Core MVC & Web API.
+* **Infrastructure:** YARP (API Gateway), Duende IdentityServer / IdentityServer4.
+* **Security & Protocols:** OpenID Connect (OIDC), OAuth 2.0, JWT Bearer, Policy-based Authorization.
+* **Databases & Persistence:** SQL Server (Database per Service), Entity Framework Core.
+* **Communication:** gRPC (Đồng bộ), RabbitMQ / MassTransit (Bất đồng bộ).
+* **Caching & Performance:** Redis Cache (Docker), Memory Cache, Redis Rate Limiting.
+* **State Management:** Secure Cookies, Session Management.
+* **UI Stack:** Tailwind CSS.
+  
+---
+
+### 🚀 Điểm nổi bật về hạ tầng
+* **Scalability:** Sử dụng **YARP** và **RabbitMQ** giúp hệ thống dễ dàng mở rộng các dịch vụ độc lập mà không ảnh hưởng đến luồng chính.
+* **Performance:** Tối ưu hóa độ trễ thông qua giao tiếp nội bộ bằng **gRPC** và cơ chế lưu trữ đệm phân tán với **Redis**.
+* **Security Standard:** Triển khai chặt chẽ các giao thức bảo mật tiêu chuẩn ngành (**OpenID Connect & OAuth 2.0**) để bảo vệ dữ liệu người dùng.
 ---
 
 ### 🏛️ 4. Architecture Description (Mô tả kiến trúc)
