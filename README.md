@@ -29,7 +29,7 @@ Dự án hệ thống thương mại điện tử
 ## 1. System Architecture (Kiến trúc hệ thống)
 ![Sơ đồ hệ thống](images/system-design-core-backend-services.png)
 
-### 🛠️ Technology Stack (Công nghệ sử dụng)
+### 🛠️ Technology Used (Công nghệ sử dụng)
 * **Core Framework:** .NET 10 / .NET 8, ASP.NET Core MVC & Web API.
 * **Databases & Persistence:** SQL Server (Database per Service), Entity Framework Core.
 * **Infrastructure:** YARP (API Gateway), Duende IdentityServer.
@@ -37,7 +37,7 @@ Dự án hệ thống thương mại điện tử
 * **Communication:** gRPC (Đồng bộ), RabbitMQ / MassTransit (Bất đồng bộ).
 * **Caching & Performance:** Redis Cache (Docker), Memory Cache, Redis Rate Limiting.
 * **State Management:** Secure Cookies, Session Management.  
-
+Xem chi tiết tại: [Giải thích công nghệ](#7-technology-explanation)
 ---
 ## 📂 2. Project Structure (Cấu trúc dự án)
 ### A. Presentation Layer (Tầng giao diện)
@@ -104,18 +104,18 @@ Các dịch vụ được xây dựng độc lập trên nền tảng **.NET Cor
     * Sử dụng **System Token** được cấp qua luồng `Client Credentials` để định danh các yêu cầu nội bộ giữa Gateway và các Service.
     * Đảm bảo các API nhạy cảm (như lấy thông tin xác thực nhân sự) chỉ chấp nhận yêu cầu từ các thành phần hợp lệ trong hệ thống.
 ---
-## 📡 4. Giao tiếp Nội bộ & Tầng Dữ liệu (Internal & Persistence)
+## 📡 4. Internal & Persistence(Giao tiếp Nội bộ & Tầng Dữ liệu)
 
 Hệ thống kết hợp giao tiếp linh hoạt và cấu trúc dữ liệu độc lập để tối ưu hiệu năng và khả năng mở rộng.
 
-### 📡 4.1. Giao tiếp Nội bộ (Communication Patterns)
+### 📡 4.1. Communication Patterns(Giao tiếp Nội bộ)
 
 *  ⚡**Synchronous (Đồng bộ) - gRPC:** * Sử dụng cho các tác vụ yêu cầu hiệu năng cao và phản hồi tức thời.
     * *Ví dụ:* **Order Service** truy vấn tồn kho từ **Product Service** trước khi xác nhận đơn.
 * 📬 **Asynchronous (Bất đồng bộ) - RabbitMQ:** * Triển khai kiến trúc hướng sự kiện (Event-driven).
     * *Ví dụ:* **Notification Service** tiêu thụ sự kiện từ hàng đợi để gửi thông báo mà không làm tắc nghẽn luồng chính.
 
-### 🗄️ 4.2. Tầng Dữ liệu (Persistence Layer)
+### 🗄️ 4.2. Persistence Layer(Tầng Dữ liệu)
 
 * **Chiến lược:** Áp dụng nghiêm ngặt mô hình **Database per Service**. Mỗi Microservice sở hữu DB riêng, đảm bảo tính độc lập và khả năng mở rộng linh hoạt.
 * **Quy mô:** Quản lý **8 Database SQL Server** tách biệt thông qua **Entity Framework Core**.
@@ -207,3 +207,28 @@ Dưới đây là cấu trúc JWT được cấp cho `cms_admin_client` sau khi 
 }
 ```
 ---
+## 7. Technology Used (Công nghệ sử dụng)
+
+### 🧱 Core Framework & Infrastructure
+* **.NET 10 / ASP.NET Core:** Nền tảng thực thi chính, cung cấp hiệu năng cao và hỗ trợ các tính năng mới nhất cho Microservices.
+* **YARP (Yet Another Reverse Proxy):** Đóng vai trò **API Gateway**, điều phối mọi request từ client đến đúng các service nội bộ, hỗ trợ cân bằng tải và bảo mật đầu vào.
+* **Duende IdentityServer:** Hệ thống quản lý định danh tập trung, cấp phát Token và xác thực người dùng cho toàn bộ các service.
+
+### 🔐 Security & Protocols
+* **OIDC & OAuth 2.0:** Các tiêu chuẩn bảo mật quốc tế giúp xác thực (Authentication) và ủy quyền (Authorization) một cách an toàn.
+* **JWT (JSON Web Token):** Phương thức truyền tin an toàn giữa các bên dưới dạng đối tượng JSON, dùng để định danh người dùng sau khi đăng nhập.
+* **Policy-based Authorization:** Phân quyền chi tiết dựa trên các điều kiện cụ thể (Role, Permission) thay vì chỉ kiểm tra quyền hạn cơ bản.
+* **Secure Cookies:** Lưu trữ trạng thái đăng nhập phía Client một cách an toàn, chống lại các cuộc tấn công XSS hoặc CSRF.
+
+### 🔄 Communication & Logic
+* **gRPC:** Giao tiếp giữa các service với nhau theo thời gian thực (đồng bộ), tốc độ cực nhanh nhờ truyền tải dữ liệu dạng nhị phân.
+* **RabbitMQ (MassTransit):** Hệ thống hàng đợi tin nhắn (Message Broker), giúp các service trao đổi dữ liệu bất đồng bộ, đảm bảo hệ thống vẫn hoạt động ổn định ngay cả khi một service gặp sự cố.
+
+### 💾 Data & Performance
+* **SQL Server (Database per Service):** Đảm bảo tính độc lập dữ liệu cho từng Microservice, tránh việc các service bị phụ thuộc lẫn nhau về mặt lưu trữ.
+* **Entity Framework Core:** Thư viện giúp thao tác với database thông qua code C# (ORM), giúp quản lý dữ liệu dễ dàng và an toàn hơn.
+* **Redis Cache:** Lưu trữ dữ liệu tạm thời (Token, Session) trong RAM để tăng tốc độ phản hồi, giảm tải cho database chính.
+* **Redis Rate Limiting:** Giới hạn số lượng request từ một người dùng trong một khoảng thời gian để ngăn chặn spam và tấn công DDoS.
+
+### 🎨 UI Stack
+* **ASP.NET Core MVC:** Mô hình lập trình giúp tách biệt giao diện và logic xử lý phía server.
