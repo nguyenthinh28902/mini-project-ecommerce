@@ -4,14 +4,15 @@ Hệ thống thương mại điện tử kiến trúc Microservices, tập trung
 
 ![Sơ đồ hệ thống](images/system-design-core-backend-services.png)
 
-### 🏗️ Kiến trúc & Công nghệ (Tech Stack)
+### 🏗️ Technology Used(Công nghệ sử dụng)
 
-* **Core Framework:** .NET 10, Entity Framework Core.
-* **Infrastructure:** YARP API Gateway, Duende.IdentityServer.
-* **Databases:** SQL Server (Mô hình **Database per Service** - 8 DB riêng biệt).
-* **Giao tiếp:** gRPC (Đồng bộ), RabbitMQ (Bất đồng bộ - Event-driven).
-* **Caching & Security:** Redis, JWT, Secure Cookies, OIDC.
-
+* **Core Framework:** .NET 10 / .NET 8, ASP.NET Core MVC & Web API.
+* **Databases & Persistence:** SQL Server (Database per Service), Entity Framework Core.
+* **Infrastructure:** YARP (API Gateway), Duende IdentityServer.
+* **Security & Protocols:** OpenID Connect (OIDC), OAuth 2.0, JWT Bearer, Policy-based Authorization.
+* **Communication:** gRPC (Đồng bộ), RabbitMQ / MassTransit (Bất đồng bộ).
+* **Caching & Performance:** Redis Cache (Docker), Memory Cache, Redis Rate Limiting.
+* **State Management:** Secure Cookies, Session Management.  
 ---
 
 ### 🛡️ Giải pháp Bảo mật & Xác thực
