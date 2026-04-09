@@ -3,7 +3,7 @@
 Hệ thống thương mại điện tử kiến trúc Microservices, tập trung vào giải pháp bảo mật và tối ưu hóa hiệu năng giao tiếp nội bộ.
 
 ![Sơ đồ hệ thống](images/system-design-core-backend-services.png)
-
+![Design Replication Database](images/design-replication-database.png)
 ### 🏗️ Technology Used(Công nghệ sử dụng)
 
 * **Core Framework:** .NET 10 / .NET 8, ASP.NET Core MVC & Web API.
