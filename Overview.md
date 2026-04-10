@@ -25,7 +25,11 @@ Hệ thống thương mại điện tử kiến trúc Microservices, tập trung
 * **Header Enrichment:** Tự động gán `X-User-Id`, `X-User-Email` vào Header để định danh ngữ cảnh.
 
 ---
+### 🛡️ Đăng nhập
 
+![System Workflows](images/identity-claims-mapping.png)
+
+---
 ### 📡 Giao tiếp & Hiệu năng
 
 * **Inter-service:** Sử dụng **gRPC** truy vấn tồn kho thời gian thực và **RabbitMQ** xử lý sự kiện đơn hàng.
@@ -36,7 +40,7 @@ Hệ thống thương mại điện tử kiến trúc Microservices, tập trung
 
 ### 🔗 Chi tiết Triển khai (Technical Links)
 
-* **Client Security:** OIDC Middleware & Cookie bảo mật tại [Web CMS](https://github.com/nguyenthinh28902/ecommerce-cms-web).
+* **Client:** OIDC Middleware & Cookie bảo mật tại [Web CMS](https://github.com/nguyenthinh28902/ecommerce-cms-web).
 * **Identity Provider:** Định nghĩa Resources/Scopes và Custom Profile Service tại [Identity Server](https://github.com/nguyenthinh28902/ecommerce-identity-server-cms).
 * **Gateway Routing:** Reverse Proxy và Auth Policy tại [YARP Gateway](https://github.com/nguyenthinh28902/ecommerce-api-gateway-cms).
 * **Service Auth:** JWT Bearer & Policy-based Authorization tại [Product Service](https://github.com/nguyenthinh28902/Ecom.ProductService).
