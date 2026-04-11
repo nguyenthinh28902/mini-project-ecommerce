@@ -156,6 +156,10 @@ Giải pháp sử dụng cơ chế Dependency Injection (DI) trong .NET để qu
 ## 🛠️ 5. System Workflows (Luồng hoạt động hệ thống)
 ### 🔑 5.1 Centralized Authentication Flow (Luồng xác thực tập trung)
 ![System Workflows](images/system-workflow-authentication.png)
+**Hình 5.1.1: Sơ đồ tổng quát luồng xác thực qua API Gateway**
+
+![Identity Claims Mapping](images/identity-claims-mapping.png)
+**Hình 5.1.2: Chi tiết quá trình OIDC Challenge và User Enrichment**
 Hệ thống áp dụng cơ chế xác thực tập trung sử dụng giao thức **OpenID Connect (OIDC)** để đảm bảo tính an toàn và đồng nhất giữa các Client:
 * **🛡️ Bước 1 - User Authentication:** Người dùng nhập thông tin đăng nhập qua Website (tích hợp Google định danh) hoặc hệ thống CMS quản trị.
 * **🚀 Bước 2 - Identity Redirection:** Client chuyển tiếp yêu cầu xác thực trực tiếp đến **Identity Server** (IdP). Việc này đảm bảo thông tin nhạy cảm không đi qua các tầng trung gian.
