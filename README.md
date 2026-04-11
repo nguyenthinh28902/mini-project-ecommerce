@@ -33,7 +33,7 @@ Dự án hệ thống thương mại điện tử
 * **Core Framework:** .NET 10 / .NET 8, ASP.NET Core MVC & Web API.
 * **Databases & Persistence:** SQL Server (Database per Service), Entity Framework Core.
 * **Infrastructure:** YARP (API Gateway), Duende IdentityServer.
-* **Security & Protocols:** OpenID Connect (OIDC), OAuth 2.0, JWT Bearer, Policy-based Authorization.
+* **Security & Protocols:** OpenID Connect (OIDC), OAuth 2.0, JWT Bearer, Cookie Authentication, Policy-based Authorization.
 * **Communication:** gRPC (Đồng bộ), RabbitMQ / MassTransit (Bất đồng bộ).
 * **Caching & Performance:** Redis Cache (Docker), Memory Cache, Redis Rate Limiting.
 * **State Management:** Secure Cookies, Session Management.  
