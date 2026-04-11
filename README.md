@@ -192,8 +192,8 @@ Dưới đây là cấu trúc JWT được cấp cho `APIGatewayCMS` sau khi gi�
   }
 }
 ```
-**Token client**
-Dưới đây là cấu trúc JWT được cấp cho `cms_admin_client` sau khi giải mã:
+**Token client CMS**
+Dưới đây là cấu trúc JWT được cấp cho `cms_admin_client`(admin) sau khi giải mã:
 ```json
 {
   "header": { "alg": "RS256", "kid": "2BF45F2C062C3F7CFD022EC23707CA44", "typ": "at+jwt" },
@@ -202,7 +202,26 @@ Dưới đây là cấu trúc JWT được cấp cho `cms_admin_client` sau khi 
     "aud": ["user.api", "product.api"],
     "scope": ["openid", "profile", "email", "user.read", "user.write", "product.read", "order.write"],
     "client_id": "cms_admin_client",
-    "sub": "4" // Id user.
+    "sub": "4" // Id user. thông tin khác không được trả về
+  }
+}
+```
+**Token client Web**
+Dưới đây là cấu trúc JWT được cấp cho `ecom_web_client`(khách hàng) sau khi giải mã:
+```json
+{
+  "header": { "alg": "RS256", "typ": "at+jwt" },
+  "payload": {
+    "iss": "https://localhost:7133",
+    "sub": "3", // Id của khách hàng.
+    "aud": ["customer.api", "product.api", "order.api", "payment.api"],
+    "scope": ["openid", "profile", "email", "customer.read", "customer.write", "product.read.web", "order.read.web", "order.write.web", "payment.read.web", "payment.write.web", "offline_access"],
+    "client_id": "ecom_web_client",
+    "email": "nguyenngocthinhtest@gmail.com", //thông tin khách hàng
+     "phone_number": "", //thông tin khách hàng
+    "iat": 1775901899,
+    "exp": 1775909099,
+    "idp": "local"
   }
 }
 ```
