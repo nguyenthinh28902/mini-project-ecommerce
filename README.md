@@ -20,7 +20,7 @@ Dự án hệ thống thương mại điện tử
     * Cấu hình Reverse Proxy chuyển tiếp yêu cầu dựa trên Route.
     * Triển khai Policy xác thực tại Gateway để đảm bảo chỉ các request có Token hợp lệ mới được đi vào tầng Service.
     * [Xem cấu hình tại Gateway](https://github.com/nguyenthinh28902/ecommerce-api-gateway-cms)
-* **Service-Level Security (Resource Server):**
+* **Service-Level:**
     * **Xác thực & Phân quyền:** Triển khai **JWT Bearer** và **Policy-based Authorization** (Scopes/Claims) tập trung tại từng Microservice.
     * **Bảo mật giao tiếp (gRPC):** Sử dụng **Interceptors** để thực thi xác thực Client/Server trong các lời gọi hàm đồng bộ cao tốc.
     * **Bảo mật thông điệp (Async):** Tích hợp cấu hình hạ tầng và mã hóa cho **RabbitMQ & MassTransit** đảm bảo an toàn luồng sự kiện.
@@ -125,8 +125,10 @@ Hệ thống kết hợp giao tiếp linh hoạt và cấu trúc dữ liệu đ�
 * **Chiến lược:** Áp dụng nghiêm ngặt mô hình **Database per Service**. Mỗi Microservice sở hữu DB riêng, đảm bảo tính độc lập và khả năng mở rộng linh hoạt.
 * **Quy mô:** Quản lý **8 Database SQL Server** tách biệt thông qua **Entity Framework Core**.
 ### 🏗️ 4.3 Database Architecture: Read/Write Splitting
-
-Hệ thống triển khai kiến trúc tách biệt luồng dữ liệu **Đọc (Read)** và **Ghi (Write)** nhằm tối ưu hóa hiệu suất xử lý và đảm bảo khả năng mở rộng cho các dịch vụ Backend.
+> [!IMPORTANT]
+> **Nội dung kết hợp xem thêm tại service:** [Service-Level Implementation (Database Replication)](https://github.com/nguyenthinh28902/Ecom.ProductService/blob/main/README.md#%EF%B8%8F-database-replication)
+ 
+Hệ thống triển khai kiến trúc tách biệt luồng dữ liệu **Đọc (Read)** và **Ghi (Write)** nhằm tối ưu hóa hiệu suất xử lý và đảm bảo khả năng mở rộng cho các dịch vụ Backend thông qua việc kết hợp cấu hình DbContext tại tầng Service.
 ![Design Replication Database](images/design-replication-database.png)
 #### 🛰️ 4.3.1 Load Balancing with HAProxy
 Thay vì kết nối trực tiếp đến các node cơ sở dữ liệu, ứng dụng giao tiếp thông qua **HAProxy** đóng vai trò là bộ điều phối (Load Balancer) trung tâm:
