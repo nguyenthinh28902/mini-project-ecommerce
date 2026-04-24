@@ -108,6 +108,13 @@ Các dịch vụ được xây dựng độc lập trên nền tảng **.NET Cor
 * **Bảo mật Service-to-Service (S2S):**
     * Sử dụng **System Token** được cấp qua luồng `Client Credentials` để định danh các yêu cầu nội bộ giữa Gateway và các Service.
     * Đảm bảo các API nhạy cảm (như lấy thông tin xác thực nhân sự) chỉ chấp nhận yêu cầu từ các thành phần hợp lệ trong hệ thống.
+#### 🛡️ 3.5 Design Philosophy: Fail-Fast First
+Hệ thống được thiết kế theo nguyên tắc **"Fail-Fast"** để bảo vệ tài nguyên hạ tầng và tăng khả năng chịu lỗi (Resilience):
+
+* **Request Validation:** Sử dụng **FluentValidation** để chặn dữ liệu rác ngay tại tầng API, ngăn chặn logic sai lệch đi sâu vào Business Logic.
+* **gRPC Deadlines:** Mọi lời gọi liên dịch vụ (Inter-service) đều được cấu hình **Timeout** (mặc định 2s). Nếu dịch vụ đích không phản hồi kịp, hệ thống sẽ ngắt kết nối và xử lý lỗi lập tức, tránh tình trạng treo luồng (Thread Blocking) dây chuyền.
+* **Early Return Pattern:** Ưu tiên kiểm tra điều kiện (Null check, Permission) ngay đầu hàm để phản hồi lỗi nhanh nhất, tối ưu hiệu năng xử lý của CPU.
+* **Infrastructure Health:** Ứng dụng sẽ dừng khởi động nếu các dịch vụ quan trọng (RabbitMQ, Database) không sẵn sàng, tránh tình trạng hệ thống vận hành trong trạng thái lỗi tiềm ẩn.
 ---
 ## 📡 4. Internal & Persistence(Giao tiếp Nội bộ & Tầng Dữ liệu)
 
