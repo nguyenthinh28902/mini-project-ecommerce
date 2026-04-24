@@ -38,6 +38,15 @@ Hệ thống thương mại điện tử kiến trúc Microservices, tập trung
 
 ---
 
+## 🛡️ Triết lý thiết kế: Fail-Fast First
+
+Hệ thống được thiết kế để phản hồi lỗi nhanh nhất có thể nhằm bảo vệ tài nguyên hạ tầng:
+
+* **Request Validation:** Sử dụng **FluentValidation** để chặn dữ liệu không hợp lệ ngay tại tầng API.
+* **gRPC Deadlines:** Cấu hình **Timeout (2s)** cho mọi lời gọi liên dịch vụ để tránh tình trạng treo luồng (Thread Blocking).
+* **Infrastructure Health:** Ứng dụng sẽ dừng khởi động nếu các dịch vụ quan trọng như RabbitMQ hoặc Database không sẵn sàng.
+
+---
 ### 🔗 Chi tiết Triển khai (Technical Links)
 
 * **Client:** OIDC Middleware & Cookie bảo mật tại [Web CMS](https://github.com/nguyenthinh28902/ecommerce-cms-web).
