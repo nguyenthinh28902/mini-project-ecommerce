@@ -176,7 +176,7 @@ Giải pháp sử dụng cơ chế Dependency Injection (DI) trong .NET để qu
 **Hình 5.1.2: Chi tiết quá trình OIDC Challenge và User Enrichment**
 
 Hệ thống áp dụng cơ chế xác thực tập trung sử dụng giao thức **OpenID Connect (OIDC)** để đảm bảo tính an toàn và đồng nhất giữa các Client:
-* **🛡️ Bước 1 - User Authentication:** Người dùng nhập thông tin đăng nhập qua Website (tích hợp Google định danh) hoặc hệ thống CMS quản trị.
+* **🛡️ Bước 1 - User Authentication:** Người dùng nhập thông tin đăng nhập qua Website (**tích hợp Google định danh**) hoặc hệ thống CMS quản trị.
 * **🚀 Bước 2 - Identity Redirection:** Client chuyển tiếp yêu cầu xác thực trực tiếp đến **Identity Server** (IdP). Việc này đảm bảo thông tin nhạy cảm không đi qua các tầng trung gian.
 * **🔍 Bước 3 - Identity Verification:** **Identity Server gọi API thông qua Gateway** để kết nối tới **User/Customer Service** nhằm kiểm tra thông tin tài khoản.
     * Sau khi xác thực thành công, Identity Server tổng hợp thông tin định danh (User Claims) để khởi tạo **Access Token (JWT)**.
