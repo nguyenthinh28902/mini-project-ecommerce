@@ -25,7 +25,7 @@ Dự án hệ thống thương mại điện tử
     * **Bảo mật giao tiếp (gRPC):** Sử dụng **Interceptors** để thực thi xác thực Client/Server trong các lời gọi hàm đồng bộ cao tốc.
     * **Bảo mật thông điệp (Async):** Tích hợp cấu hình hạ tầng và mã hóa cho **RabbitMQ & MassTransit** đảm bảo an toàn luồng sự kiện.
     * [Xem cấu hình tại Product Service](https://github.com/nguyenthinh28902/Ecom.ProductService)
-* **Identity CMS Core & Authorization Logic:**
+* **Identity CMS Core & Authorization Logic:** **Mục này không bao gồm phân quyền cho dịch vụ khách hàng**
     * Định nghĩa cấu trúc các thực thể cốt lõi bao gồm `ApplicationUser`, `ApplicationDepartment` và `DepartmentPermission`.
     * Triển khai logic ánh xạ và chuyển đổi quyền hạn từ cơ sở dữ liệu sang định dạng Scopes.
     * [Xem cấu hình tại Identity CMS Core](https://github.com/nguyenthinh28902/ecommerce-identity-cms/blob/main/README.md)
