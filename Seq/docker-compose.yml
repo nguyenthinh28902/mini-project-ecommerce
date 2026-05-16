@@ -1,0 +1,24 @@
+services:
+  seq:
+    image: datalust/seq:latest
+    container_name: ecommerce-seq
+    environment:
+      - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_ADMINPASSWORD=abc12345 # Yêu cầu tối thiểu 8 ký tự, ný có thể đổi lại theo ý muốn nhé
+    ports:
+      - "5341:80"
+    volumes:
+      - seq_data:/data
+    networks:
+      - mini-project-ecommerce
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+networks:
+  mini-project-ecommerce:
+    driver: bridge
+
+volumes:
+  seq_data:
