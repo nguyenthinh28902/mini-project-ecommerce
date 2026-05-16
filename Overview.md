@@ -12,7 +12,8 @@ Hệ thống thương mại điện tử kiến trúc Microservices, tập trung
 * **Security & Protocols:** OpenID Connect (OIDC), OAuth 2.0, JWT Bearer, Policy-based Authorization.
 * **Communication:** gRPC (Đồng bộ), RabbitMQ / MassTransit (Bất đồng bộ).
 * **Caching & Performance:** Redis Cache (Docker), Memory Cache, Redis Rate Limiting.
-* **State Management:** Secure Cookies, Session Management.  
+* **State Management:** Secure Cookies, Session Management.
+* **Observability & Logging:** Centralized Logging (Serilog & Seq), Request Tracing (Correlation ID).
 ---
 
 ### 🛡️ Giải pháp Bảo mật & Xác thực
