@@ -41,8 +41,12 @@ Dự án hệ thống thương mại điện tử
 * **Security & Protocols:** OpenID Connect (OIDC), OAuth 2.0, JWT Bearer, Cookie Authentication, Policy-based Authorization.
 * **Communication:** gRPC (Đồng bộ), RabbitMQ / MassTransit (Bất đồng bộ).
 * **Caching & Performance:** Redis Cache (Docker), Memory Cache, Redis Rate Limiting.
-* **State Management:** Secure Cookies, Session Management.  
-Xem chi tiết tại: [7. Technology Used (Công nghệ sử dụng)](#7-technology-used-công-nghệ-sử-dụng)
+* **State Management:** Secure Cookies, Session Management.
+* **Observability & Logging:** Centralized Logging (Serilog & Seq), Request Tracing (Correlation ID).
+
+> [!IMPORTANT]
+>Xem chi tiết tại: [7. Technology Used (Công nghệ sử dụng)](#7-technology-used-công-nghệ-sử-dụng)
+
 ---
 ## 📂 2. Project Structure (Cấu trúc dự án)
 ### A. Presentation Layer (Tầng giao diện)
@@ -270,3 +274,9 @@ Dưới đây là cấu trúc JWT được cấp cho `ecom_web_client`(khách h�
 
 ### 🎨 UI Stack
 * **ASP.NET Core MVC:** Mô hình lập trình giúp tách biệt giao diện và logic xử lý phía server.
+
+### 🔍 Observability & Logging
+* **Centralized Logging (Serilog & Seq):** Giải pháp thu thập log từ API Gateway và các Service về một nơi quản lý trung tâm, giúp dễ dàng truy vấn và phân tích lỗi hệ thống.
+* **Request Tracing (Correlation ID):** Kỹ thuật tạo và truyền mã định danh duy nhất qua HTTP/gRPC, giúp xâu chuỗi và theo dõi trọn vẹn luồng đi của một request giữa các dịch vụ.
+
+---
