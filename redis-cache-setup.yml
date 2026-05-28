@@ -1,12 +1,36 @@
-#cấu hình thuật toán lru và ttl
+version: '3.8'
+
 services:
+  # =================================================================
+  # CON REDIS 1: CHUYÊN LÀM CACHE, TOKEN, SESSION (Cổng 6380)
+  # =================================================================
   redis-cache:
     image: redis:alpine
-    container_name: my-redis-lru-ttl
+    container_name: my-redis-lru-cache
     command: >
       redis-server 
       --maxmemory 100mb 
       --maxmemory-policy volatile-lru
     ports:
-      - "6380:6379" 
+      - "6380:6379" # Port chuẩn 6380 cho Cache thông thường
     restart: always
+
+  # =================================================================
+  # CON REDIS 2: CHUYÊN CHẠY BLOOM FILTER CHO ĐỊNH DANH (Cổng 6379)
+  # =================================================================
+  redis-bloom:
+    image: redis/redis-stack-server:latest
+    container_name: my-redis-infrastructure-bloom
+    command: >
+      redis-server 
+      --maxmemory 500mb 
+      --maxmemory-policy noeviction 
+      --appendonly yes
+    ports:
+      - "6379:6379" # Máy local của mày sẽ kết nối qua Port 6379
+    volumes:
+      - redis_bloom_data:/data
+    restart: always
+
+volumes:
+  redis_bloom_data:
