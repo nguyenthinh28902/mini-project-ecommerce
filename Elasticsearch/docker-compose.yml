@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
+    container_name: elasticsearch_dev
+    environment:
+      - node.name=elasticsearch_dev
+      - cluster.name=elastic-apm-cluster
+      - discovery.type=single-node
+      # Tắt SSL nội bộ để dev local không bị phiền phức chứng chỉ
+      - xpack.security.enabled=true
+      - xpack.security.enrollment.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      # Set cứng password cho tài khoản 'elastic' mặc định
+      - ELASTIC_PASSWORD=pass123
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    networks:
+      - elastic_net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q 'status.*gradient' || true"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.1
+    container_name: kibana_dev
+    ports:
+      - "5601:5601"
+    environment:
+      - SERVERNAME=kibana_dev
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      # KHÔNG ĐIỀN USERNAME/PASSWORD Ở ĐÂY NỮA
+      - ELASTICSEARCH_SERVICEACCOUNTTOKEN=AAEAAWVsYXN0aWMva2liYW5hL2tpYmFuYS10b2tlbjpXWlFlWTlCZVNlZTZIQnluaUxHOHdR
+      - XPACK_FLEET_ALLOWUNSAFEWITHOUTSECURITY=true
+      - XPACK_FLEET_DISABLEUNSAFEWARNINGS=true
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - elastic_net
+
+  apm-server:
+    image: docker.elastic.co/apm/apm-server:8.11.1
+    container_name: apm_server_dev
+    ports:
+      - "8200:8200"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=pass123
+    # Ghi đè lệnh khởi chạy để cấu hình chế độ Standalone kèm Secret Token
+    command: >
+      apm-server -e
+      -E output.elasticsearch.hosts=["http://elasticsearch:9200"]
+      -E output.elasticsearch.username="elastic"
+      -E output.elasticsearch.password="pass123"
+      -E apm-server.auth.secret_token="TopSecretToken2026"
+      -E apm-server.rum.enabled=true
+      -E apm-server.tls.enabled=false
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - elastic_net
+
+volumes:
+  es_data:
+    driver: local
+
+networks:
+  elastic_net:
+    driver: bridge
